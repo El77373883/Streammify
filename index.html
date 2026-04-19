@@ -273,17 +273,19 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   position: fixed;
   top: 0;
   right: -100%;
-  width: 300px;
-  max-width: 85%;
+  width: 320px;
+  max-width: 90%;
   height: 100vh;
+  height: 100dvh;
   background: var(--d2);
-  z-index: 600;
-  transition: right 0.3s ease;
-  box-shadow: -4px 0 30px rgba(0,0,0,0.5);
-  padding: 20px;
+  z-index: 601;
+  transition: right 0.4s cubic-bezier(.32,.72,0,1);
+  box-shadow: -8px 0 40px rgba(0,0,0,0.6);
+  padding: calc(var(--st) + 60px) 20px 40px;
   overflow-y: auto;
   border-left: 1px solid var(--d3);
 }
+
 .profile-modal.open {
   right: 0;
 }
@@ -307,17 +309,21 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   border-bottom: 1px solid var(--d3);
 }
 .profile-avatar-large {
-  width: 60px;
-  height: 60px;
-  background: var(--g);
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(135deg, var(--g), #0a5c2a);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  font-weight: 700;
-  color: black;
+  font-size: 28px;
+  font-weight: 800;
+  color: white;
+  border: 3px solid var(--g);
+  box-shadow: 0 4px 20px rgba(29,185,84,0.4);
+  flex-shrink: 0;
 }
+
 .profile-info h3 {
   font-size: 18px;
   font-weight: 700;
