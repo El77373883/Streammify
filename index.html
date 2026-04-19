@@ -282,8 +282,9 @@ max-width: 75%;
   transition: right 0.4s cubic-bezier(.32,.72,0,1);
   box-shadow: -8px 0 40px rgba(0,0,0,0.6);
   padding: calc(var(--st) + 60px) 20px 40px;
-  overflow-y: auto;
+    overflow-y: auto;
   border-left: 1px solid var(--d3);
+  overscroll-behavior: contain;
 }
 
 .profile-modal.open {
@@ -1619,6 +1620,8 @@ window.closeProfile = closeProfile;
 window.toggleTheme = toggleTheme;
 window.setAudioQuality = setAudioQuality;
 window.doLogout = doLogout;
+document.getElementById('profileModal').addEventListener('touchmove', e => e.stopPropagation(), {passive:true});
+
 
 </script>
 
