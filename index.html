@@ -1530,7 +1530,11 @@ function openProfile() {
   loadUserProfile();
   document.getElementById('profileModal').classList.add('open');
   document.getElementById('profileOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
 }
+
 
 function calcularEstadisticas() {
   const totalSongs = Object.values(stats).reduce((a, b) => a + b, 0);
@@ -1563,7 +1567,11 @@ function reportarProblema() {
 function closeProfile() {
   document.getElementById('profileModal').classList.remove('open');
   document.getElementById('profileOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
 }
+
 
 function toggleTheme() {
   document.body.classList.toggle('light-mode');
