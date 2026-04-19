@@ -1,15 +1,15 @@
-// sw.js - Streamify Offline Cache
-const CACHE_NAME = 'streamify-cache-v2';
 const urlsToCache = [
   '/',
   '/index.html',
   '/admin.html',
-  '/precios.html',
-  '/login.html',
+  '/create-cuenta-free.html',
   '/intro.html',
-  'https://cdn.jsdelivr.net/npm/eruda',
+  '/login.html',
+  '/precios.html',
+  '/sw.js',
   'https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js'
 ];
+
 
 // Instalación del SW
 self.addEventListener('install', event => {
