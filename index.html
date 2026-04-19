@@ -123,7 +123,7 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
 .ahero{position:relative;height:260px;overflow:hidden}
 #aHeroCanvas{width:100%!important;height:260px!important;display:block}
 .agrad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.2),var(--d))}
-.aback{position:absolute;top:calc(var(--st)+44px);left:16px;width:36px;height:36px;background:rgba(0,0,0,.5);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1}
+.aback{position:absolute;top:calc(var(--st)+44px);left:16px;width:40px;height:40px;background:rgba(0,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);}
 .ainfo{position:absolute;bottom:0;left:0;right:0;padding:16px}
 .ainfo h2{font-size:32px;font-weight:900}
 .amly{font-size:12px;color:var(--gr);margin-top:4px}
@@ -151,7 +151,7 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
 #pp.open{transform:translateY(0)}
 #pp::-webkit-scrollbar{display:none}
 .plhero{height:230px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;position:relative}
-.plback{position:absolute;top:calc(var(--st)+44px);left:16px;background:none;border:none;color:#fff;cursor:pointer}
+.plback{position:absolute;top:calc(var(--st)+44px);left:16px;width:40px;height:40px;background:rgba(0,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:10;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);color:#fff;}
 #plCoverWrap canvas{width:160px!important;height:160px!important;border-radius:6px;box-shadow:0 12px 40px rgba(0,0,0,.7);display:block}
 #plCoverWrap img{width:160px!important;height:160px!important;border-radius:6px;box-shadow:0 12px 40px rgba(0,0,0,.7);display:block;object-fit:cover}
 .plinfo{padding:16px}
@@ -682,7 +682,8 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
     <button class="fpct" onclick="nextTrack()"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
     <button class="fpct" id="repBtn" onclick="toggleRepeat()"><svg width="26" height="26" fill="none" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 01-4 4H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </div>
-  <div class="fpex">
+<div class="fpex">
+    <button class="fpexbt" id="fpDownloadBtn"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 21h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Descargar</button>
     <button class="fpexbt" onclick="toast('Conectar dispositivo')"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Dispositivos</button>
     <button class="fpexbt" onclick="toggleQueueView()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Cola</button>
   </div>
@@ -1348,6 +1349,8 @@ function playTrack(idx){
   const [a]=PAL[palIdx%PAL.length];
   document.getElementById('fp').style.background=`linear-gradient(180deg,${a} 0%,#121212 55%)`;
   document.getElementById('player').classList.add('show');
+  // Botón descarga en el reproductor fullscreen
+document.getElementById('fpDownloadBtn').onclick = () => guardarParaOffline(T[curIdx]);
   updateIcons();
   addToHistory(idx);
   addToStats(idx);
