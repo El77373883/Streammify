@@ -459,6 +459,14 @@ max-width: 75%;
 }
 
 
+.playing-bars{display:flex;align-items:flex-end;gap:2px;height:14px;flex-shrink:0;}
+.playing-bars span{width:3px;background:var(--g);border-radius:2px;animation:bar 0.8s ease infinite;}
+.playing-bars span:nth-child(1){height:6px;animation-delay:0s;}
+.playing-bars span:nth-child(2){height:12px;animation-delay:0.2s;}
+.playing-bars span:nth-child(3){height:8px;animation-delay:0.4s;}
+@keyframes bar{0%,100%{transform:scaleY(1);}50%{transform:scaleY(1.8);}}
+
+
 </style>
 </head>
 <body>
@@ -1284,7 +1292,9 @@ const row=document.createElement('div');row.className='titem';row.id='titem_'+ti
     const inf=document.createElement('div');inf.style='flex:1;min-width:0';
     inf.innerHTML=`<div class="tname">${t.title}</div><div class="tplays">${(Math.random()*800+100|0)}M</div>`;
     const dur=document.createElement('div');dur.className='tdur';dur.textContent=fmt(t.duration || 150+Math.random()*90);
-    row.append(num,thumb,inf,dur);at.appendChild(row);
+const bars=document.createElement('div');bars.className='playing-bars';bars.id='bars_'+ti;bars.innerHTML='<span></span><span></span><span></span>';bars.style.display=(curIdx===ti&&playing)?'flex':'none';
+row.append(num,thumb,inf,dur,bars);
+
   });
   const dg=document.getElementById('discGrid');dg.innerHTML='';
   curArtist.tids.forEach(ti=>{
@@ -1366,8 +1376,11 @@ function playTrack(idx){
   // Botón descarga en el reproductor fullscreen
 document.getElementById('fpDownloadBtn').onclick = () => guardarParaOffline(T[curIdx]);
   document.querySelectorAll('.titem').forEach(el => el.classList.remove('now'));
-  const cur = document.getElementById('titem_'+idx);
-  if(cur) cur.classList.add('now');
+const cur = document.getElementById('titem_'+idx);
+if(cur) cur.classList.add('now');
+document.querySelectorAll('.playing-bars').forEach(el => el.style.display='none');
+const bars = document.getElementById('bars_'+idx);
+if(bars) bars.style.display='flex';
   updateIcons();
   addToHistory(idx);
   addToStats(idx);
