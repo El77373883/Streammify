@@ -273,8 +273,8 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   position: fixed;
   top: 0;
   right: -100%;
-  width: 320px;
-  max-width: 90%;
+width: 280px;
+max-width: 75%;
   height: 100vh;
   height: 100dvh;
   background: var(--d2);
@@ -1437,14 +1437,6 @@ window.guardarParaOffline = guardarParaOffline;
   });
 })();
 
-// Registrar Service Worker para modo offline
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('✅ SW registrado:', reg.scope))
-      .catch(err => console.log('❌ SW falló:', err));
-  });
-}
 
 // ===== PERFIL Y CONFIGURACIÓN =====
 let currentUserData = null;
