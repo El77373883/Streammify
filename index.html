@@ -400,10 +400,7 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
 </head>
 <body>
   
-  <!-- Botón de perfil -->
-<div class="user-profile-btn" id="userProfileBtn" onclick="openProfile()">
-  <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-</div>
+
 
 <!-- Modal de perfil -->
 <div class="profile-overlay" id="profileOverlay" onclick="closeProfile()"></div>
@@ -460,7 +457,13 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
 <div id="app">
   <div id="pages">
     <div class="page active" id="homePage">
-      <div class="htop"><div class="greet" id="greet">Hola</div></div>
+<div class="htop">
+  <div class="greet" id="greet">Hola</div>
+  <div class="user-profile-btn" id="userProfileBtn" onclick="openProfile()">
+    <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+  </div>
+</div>
+
       <div class="qgrid" id="qgrid"></div>
       <div class="stitle">Hecho para ti</div><div class="hrow" id="featRow"></div>
       <div class="stitle">Artistas populares</div><div class="hrow" id="artRow"></div>
@@ -1298,6 +1301,15 @@ async function loadUserProfile() {
   document.getElementById('profileName').textContent = user.displayName || user.email?.split('@')[0] || 'Usuario';
   document.getElementById('profileEmail').textContent = user.email || '';
   document.getElementById('profileInitials').textContent = (user.displayName || 'U')[0].toUpperCase();
+
+const btn = document.getElementById('userProfileBtn');
+if (user.photoURL) {
+  btn.innerHTML = `<img src="${user.photoURL}" alt="perfil" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+} else {
+  const inicial = (user.displayName || user.email || 'U')[0].toUpperCase();
+  btn.innerHTML = `<span style="font-size:16px;font-weight:700;color:white;">${inicial}</span>`;
+}
+
   
   // Cargar datos de Firestore
   try {
@@ -1333,7 +1345,7 @@ async function loadUserProfile() {
 }
 
 function updateDownloadDisplay() {
-  const limit = (currentUserData?.plan || 'free') === 'free' ? 5 : 999;
+const limit = (currentUserData?.plan || 'free') === 'free' ? 10 : 999;
   const used = monthlyDownloads;
   const percentage = (used / limit) * 100;
   
@@ -1380,7 +1392,7 @@ guardarParaOffline = async function(track) {
   const user = window.auth?.currentUser;
   if (user) {
     const plan = currentUserData?.plan || 'free';
-    if (plan === 'free' && monthlyDownloads >= 5) {
+    if (plan === 'free' && monthlyDownloads >= 10) {
       toast('❌ Límite mensual de 5 descargas alcanzado');
       openProfile();
       return;
