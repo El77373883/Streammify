@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1DB954">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Streamify Admin</title>
+  
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyAP5pHkk4Cm5-d6btJCN1MSLQBH699cV-0",
+      authDomain: "project-8fc84ba4-98a9-4394-b66.firebaseapp.com",
+      projectId: "project-8fc84ba4-98a9-4394-b66",
+      storageBucket: "project-8fc84ba4-98a9-4394-b66.firebasestorage.app",
+      messagingSenderId: "873347768381",
+      appId: "1:873347768381:web:75cdd37df970ba14984a54"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.getDocs = getDocs;
+    window.doc = doc;
+    window.updateDoc = updateDoc;
+    window.deleteDoc = deleteDoc;
+    window.query = query;
+    window.orderBy = orderBy;
+  </script>
+  
+  <!-- Cloudinary -->
+  <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+  
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <!-- SortableJS para drag & drop -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  
+  <style>
+    :root {
+      --g: #1DB954;
+      --bk: #000;
+      --d: #121212;
+      --d2: #181818;
+      --d3: #282828;
+      --d4: #3e3e3e;
+      --w: #fff;
+      --gr: #b3b3b3;
+      --gr2: #535353;
+      --danger: #e91429;
+      --warning: #ffa500;
+      --sb: env(safe-area-inset-bottom, 0px);
+      --st: env(safe-area-inset-top, 0px);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    body {
+  background: var(--bk);
+  color: var(--w);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  padding: calc(var(--st) + 16px) 16px calc(var(--sb) + 80px);
+  min-height: 100vh;
+}
+
+#mainContent {
+  display: none;
+}
+
+#mainContent.visible {
+  display: block;
+}
+
+    
+    /* Login Screen */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    
+    .login-box {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px 24px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .login-logo svg {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 16px;
+    }
+    
+    .login-logo h1 {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--g), #4a9eff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .login-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      padding: 16px;
+      color: white;
+      font-size: 16px;
+      margin-bottom: 20px;
+      outline: none;
+      transition: all 0.2s;
+    }
+    
+    .login-input:focus {
+      border-color: var(--g);
+      background: rgba(255, 255, 255, 0.15);
+    }
+    
+    .login-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+    
+    .login-btn {
+      width: 100%;
+      background: var(--g);
+      border: none;
+      border-radius: 30px;
+      padding: 16px;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    
+    .login-btn:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+    
+    .login-error {
+      color: var(--danger);
+      font-size: 13px;
+      text-align: center;
+      margin-top: 16px;
+      min-height: 20px;
+    }
+    
+    /* Header */
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      position: sticky;
+      top: calc(var(--st) + 16px);
+      z-index: 10;
+      background: var(--bk);
+      padding: 8px 0;
+    }
+    
+    .admin-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--g), #4a9eff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .logout-btn {
+      background: var(--d3);
+      border: none;
+      border-radius: 20px;
+      padding: 10px 18px;
+      color: var(--w);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    
+    .logout-btn:active {
+      background: var(--d4);
+    }
+    
+    /* Tabs */
+    .admin-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 4px;
+    }
+    
+    .admin-tabs::-webkit-scrollbar {
+      display: none;
+    }
+    
+    .tab-btn {
+      background: var(--d3);
+      border: none;
+      border-radius: 20px;
+      padding: 10px 18px;
+      color: var(--gr);
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    
+    .tab-btn.active {
+      background: var(--g);
+      color: white;
+    }
+    
+    /* Paneles */
+    .panel {
+      display: none;
+    }
+    
+    .panel.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Dashboard Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .stat-card {
+      background: var(--d2);
+      border-radius: 16px;
+      padding: 20px 16px;
+      border: 1px solid var(--d3);
+    }
+    
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      background: rgba(29, 185, 84, 0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+    
+    .stat-value {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+    
+    .stat-label {
+      font-size: 13px;
+      color: var(--gr);
+    }
+    
+    .chart-container {
+      background: var(--d2);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 24px;
+      border: 1px solid var(--d3);
+    }
+    
+    .chart-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    
+    /* Formularios */
+    .form-section {
+      background: var(--d2);
+      border-radius: 20px;
+      padding: 24px 20px;
+      margin-bottom: 24px;
+      border: 1px solid var(--d3);
+    }
+    
+    .form-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gr);
+      margin-bottom: 8px;
+    }
+    
+    .form-input {
+      width: 100%;
+      background: var(--d3);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      transition: border 0.15s;
+      font-family: inherit;
+    }
+    
+    .form-input:focus {
+      border-color: var(--g);
+    }
+    
+    .form-input::placeholder {
+      color: var(--gr2);
+    }
+    
+    textarea.form-input {
+      min-height: 100px;
+      resize: vertical;
+    }
+    
+    .form-select {
+      width: 100%;
+      background: var(--d3);
+      border: 1px solid transparent;
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    
+    .form-select:focus {
+      border-color: var(--g);
+    }
+    
+    .image-upload-area {
+      border: 2px dashed var(--d4);
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      margin-bottom: 12px;
+    }
+    
+    .image-upload-area:active {
+      border-color: var(--g);
+      background: rgba(29, 185, 84, 0.05);
+    }
+    
+    .upload-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+    
+    .upload-text {
+      font-size: 14px;
+      color: var(--gr);
+      margin-bottom: 4px;
+    }
+    
+    .upload-hint {
+      font-size: 12px;
+      color: var(--gr2);
+    }
+    
+    .image-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    
+    .preview-item {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .preview-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .preview-remove {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      backdrop-filter: blur(4px);
+    }
+    
+    .submit-btn {
+      width: 100%;
+      background: var(--g);
+      border: none;
+      border-radius: 30px;
+      padding: 18px;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+      margin-top: 12px;
+    }
+    
+    .submit-btn:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+    
+    .submit-btn.secondary {
+      background: var(--d3);
+    }
+    
+    /* Lista de elementos */
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    
+    .list-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+    
+    .list-count {
+      background: var(--d3);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--gr);
+    }
+    
+    .item-list {
+      background: var(--d2);
+      border-radius: 20px;
+      overflow: hidden;
+      border: 1px solid var(--d3);
+    }
+    
+    .list-item {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--d3);
+      cursor: grab;
+      transition: background 0.15s;
+    }
+    
+    .list-item:active {
+      background: var(--d3);
+    }
+    
+    .list-item:last-child {
+      border-bottom: none;
+    }
+    
+    .item-image {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-right: 14px;
+      flex-shrink: 0;
+      background: var(--d3);
+    }
+    
+    .item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+    
+    .item-title {
+      font-size: 15px;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .item-subtitle {
+      font-size: 12px;
+      color: var(--gr);
+      margin-top: 2px;
+    }
+    
+    .item-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--d3);
+      border: none;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--w);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    
+    .action-btn:active {
+      background: var(--d4);
+    }
+    
+    .action-btn.danger:active {
+      background: var(--danger);
+    }
+    
+    .drag-handle {
+      margin-right: 12px;
+      color: var(--gr2);
+      font-size: 20px;
+      cursor: grab;
+    }
+    
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: calc(var(--sb) + 20px);
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--d2);
+      color: white;
+      padding: 14px 24px;
+      border-radius: 40px;
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--d3);
+    }
+    
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    
+    /* Modal de confirmación */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      padding: 20px;
+    }
+    
+    .modal {
+      background: var(--d2);
+      border-radius: 24px;
+      padding: 28px 24px;
+      max-width: 340px;
+      width: 100%;
+      border: 1px solid var(--d3);
+    }
+    
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    
+    .modal-text {
+      font-size: 15px;
+      color: var(--gr);
+      margin-bottom: 24px;
+      line-height: 1.4;
+    }
+    
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .modal-btn {
+      flex: 1;
+      background: var(--d3);
+      border: none;
+      border-radius: 14px;
+      padding: 14px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    
+    .modal-btn.confirm {
+      background: var(--danger);
+    }
+    
+    .modal-btn:active {
+      opacity: 0.8;
+    }
+    
+    /* Estados vacíos */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--gr);
+    }
+    
+    .empty-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    
+    /* Badges */
+    .badge {
+      background: var(--d3);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      display: inline-block;
+    }
+    
+    .badge.success {
+      background: rgba(29, 185, 84, 0.2);
+      color: var(--g);
+    }
+    
+    /* Switch */
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--d4);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    
+    .switch.active {
+      background: var(--g);
+    }
+    
+    .switch::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: left 0.2s;
+    }
+    
+    .switch.active::after {
+      left: 22px;
+    }
+    
+    /* Search bar */
+    .search-bar {
+      background: var(--d3);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .search-bar input {
+      flex: 1;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+    
+    .search-bar input::placeholder {
+      color: var(--gr2);
+    }
+    
+    /* Settings group */
+    .settings-group {
+      background: var(--d2);
+      border-radius: 16px;
+      padding: 8px 0;
+      margin-bottom: 20px;
+      border: 1px solid var(--d3);
+    }
+    
+    .settings-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--d3);
+    }
+    
+    .settings-item:last-child {
+      border-bottom: none;
+    }
+    
+    .settings-label {
+      font-size: 15px;
+      font-weight: 500;
+    }
+    
+    .settings-desc {
+      font-size: 12px;
+      color: var(--gr);
+      margin-top: 2px;
+    }
+    
+    /* Color picker */
+    .color-picker {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .color-option {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color 0.15s;
+    }
+    
+    .color-option.active {
+      border-color: white;
+    }
+    
+    /* Responsive */
+    @media (max-width: 400px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="loginScreen">
+    <div class="login-box">
+      <div class="login-logo">
+        <svg viewBox="0 0 24 24" fill="var(--g)" width="60" height="60">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+        </svg>
+        <h1>Streamify Admin</h1>
+      </div>
+      <input type="password" id="passwordInput" class="login-input" placeholder="Contraseña" autofocus>
+      <button class="login-btn" onclick="login()">Acceder</button>
+      <div class="login-error" id="loginError"></div>
+    </div>
+  </div>
+
+  <!-- Contenido principal (visible después de login) -->
+  <div id="mainContent">
+    <!-- Header -->
+    <div class="admin-header">
+      <h1>Streamify Admin</h1>
+      <button class="logout-btn" onclick="logout()">Salir</button>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+      <button class="tab-btn" onclick="switchTab('songs')">🎵 Canciones</button>
+      <button class="tab-btn" onclick="switchTab('artists')">🎤 Artistas</button>
+      <button class="tab-btn" onclick="switchTab('albums')">💿 Álbumes</button>
+      <button class="tab-btn" onclick="switchTab('playlists')">📋 Playlists</button>
+      <button class="tab-btn" onclick="switchTab('banners')">🎯 Banners</button>
+      <button class="tab-btn" onclick="switchTab('settings')">⚙️ Ajustes</button>
+    </div>
+
+    <!-- Dashboard Panel -->
+    <div class="panel active" id="dashboardPanel">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">🎵</div>
+          <div class="stat-value" id="totalSongs">0</div>
+          <div class="stat-label">Canciones totales</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🎤</div>
+          <div class="stat-value" id="totalArtists">0</div>
+          <div class="stat-label">Artistas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💿</div>
+          <div class="stat-value" id="totalAlbums">0</div>
+          <div class="stat-label">Álbumes</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📋</div>
+          <div class="stat-value" id="totalPlaylists">0</div>
+          <div class="stat-label">Playlists</div>
+        </div>
+      </div>
+      
+      <div class="chart-container">
+        <div class="chart-title">🎵 Canciones por género</div>
+        <canvas id="genreChart" style="width:100%; height:200px;"></canvas>
+      </div>
+      
+      <div class="list-header">
+        <span class="list-title">🆕 Últimas canciones agregadas</span>
+        <span class="list-count" id="recentCount">0</span>
+      </div>
+      <div class="item-list" id="recentSongsList">
+        <div class="empty-state">
+          <div class="empty-icon">🎵</div>
+          <div>No hay canciones aún</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Songs Panel -->
+    <div class="panel" id="songsPanel">
+      <div class="search-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="Buscar canciones..." id="songSearch" oninput="filterSongs(this.value)">
+      </div>
+      
+      <div class="form-section">
+        <div class="form-title">➕ Agregar nueva canción</div>
+        
+        <div class="form-group">
+          <label class="form-label">Título de la canción *</label>
+          <input type="text" class="form-input" id="songTitle" placeholder="Ej: 7 Rings">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Artista *</label>
+          <select class="form-select" id="songArtist">
+            <option value="">Seleccionar artista...</option>
+          </select>
+          <div style="margin-top: 8px;">
+            <button class="submit-btn secondary" style="padding:10px;" onclick="quickAddArtist()">+ Crear nuevo artista</button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Álbum</label>
+          <select class="form-select" id="songAlbum">
+            <option value="">Seleccionar álbum (opcional)...</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Género *</label>
+          <select class="form-select" id="songGenre">
+            <option value="Pop">🎤 Pop</option>
+            <option value="Rap">🎧 Rap</option>
+            <option value="Trap">🔥 Trap</option>
+            <option value="Reggaetón">💃 Reggaetón</option>
+            <option value="Electrónica">🎛️ Electrónica</option>
+            <option value="R&B">🎵 R&B</option>
+            <option value="Rock">🎸 Rock</option>
+            <option value="Latino">🌴 Latino</option>
+            <option value="Indie">🌿 Indie</option>
+            <option value="Hip-Hop">🎙️ Hip-Hop</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">URL del MP3 (Archive.org u otro) *</label>
+          <input type="url" class="form-input" id="songUrl" placeholder="https://archive.org/download/...">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Letra de la canción</label>
+          <textarea class="form-input" id="songLyrics" placeholder="Pega la letra aquí..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Duración (en segundos)</label>
+          <input type="number" class="form-input" id="songDuration" placeholder="180" min="1">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Carátula de la canción</label>
+          <div class="image-upload-area" onclick="uploadImage('songCover')">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text">Toca para subir imagen</div>
+            <div class="upload-hint">JPG, PNG (máx 5MB)</div>
+          </div>
+          <div class="image-preview" id="songCoverPreview"></div>
+          <input type="hidden" id="songCoverUrl">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Destacada</label>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="switch" id="songFeaturedSwitch" onclick="toggleSwitch(this)"></div>
+            <span style="color: var(--gr); font-size: 13px;">Aparecerá primero en la home</span>
+          </div>
+        </div>
+        
+        <button class="submit-btn" onclick="saveSong()">💾 Guardar canción</button>
+      </div>
+      
+      <div class="list-header">
+        <span class="list-title">📋 Todas las canciones</span>
+        <span class="list-count" id="songsCount">0</span>
+      </div>
+      <div class="item-list" id="songsList">
+        <div class="empty-state">
+          <div class="empty-icon">🎵</div>
+          <div>No hay canciones aún</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Artists Panel -->
+    <div class="panel" id="artistsPanel">
+      <div class="form-section">
+        <div class="form-title">🎤 Agregar nuevo artista</div>
+        
+        <div class="form-group">
+          <label class="form-label">Nombre del artista *</label>
+          <input type="text" class="form-input" id="artistName" placeholder="Ej: Bad Bunny">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Género principal *</label>
+          <select class="form-select" id="artistGenre">
+            <option value="Pop">🎤 Pop</option>
+            <option value="Rap">🎧 Rap</option>
+            <option value="Trap">🔥 Trap</option>
+            <option value="Reggaetón">💃 Reggaetón</option>
+            <option value="Electrónica">🎛️ Electrónica</option>
+            <option value="R&B">🎵 R&B</option>
+            <option value="Rock">🎸 Rock</option>
+            <option value="Latino">🌴 Latino</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Biografía</label>
+          <textarea class="form-input" id="artistBio" placeholder="Información sobre el artista..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Oyentes mensuales (formato)</label>
+          <input type="text" class="form-input" id="artistMonthly" placeholder="82.4M" value="0">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Instagram</label>
+          <input type="text" class="form-input" id="artistInstagram" placeholder="@usuario">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">YouTube</label>
+          <input type="text" class="form-input" id="artistYoutube" placeholder="URL del canal">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Spotify</label>
+          <input type="text" class="form-input" id="artistSpotify" placeholder="URL de Spotify">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Foto de perfil</label>
+          <div class="image-upload-area" onclick="uploadImage('artistAvatar')">
+            <div class="upload-icon">📸</div>
+            <div class="upload-text">Toca para subir foto</div>
+          </div>
+          <div class="image-preview" id="artistAvatarPreview"></div>
+          <input type="hidden" id="artistAvatarUrl">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Banner del artista</label>
+          <div class="image-upload-area" onclick="uploadImage('artistBanner')">
+            <div class="upload-icon">🌄</div>
+            <div class="upload-text">Toca para subir banner</div>
+          </div>
+          <div class="image-preview" id="artistBannerPreview"></div>
+          <input type="hidden" id="artistBannerUrl">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Verificado</label>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="switch active" id="artistVerifiedSwitch" onclick="toggleSwitch(this)"></div>
+            <span style="color: var(--gr); font-size: 13px;">Mostrar insignia de verificado</span>
+          </div>
+        </div>
+        
+        <button class="submit-btn" onclick="saveArtist()">💾 Guardar artista</button>
+      </div>
+      
+      <div class="list-header">
+        <span class="list-title">🎤 Todos los artistas</span>
+        <span class="list-count" id="artistsCount">0</span>
+      </div>
+      <div class="item-list" id="artistsList">
+        <div class="empty-state">
+          <div class="empty-icon">🎤</div>
+          <div>No hay artistas aún</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Albums Panel -->
+    <div class="panel" id="albumsPanel">
+      <div class="form-section">
+        <div class="form-title">💿 Crear nuevo álbum</div>
+        
+        <div class="form-group">
+          <label class="form-label">Nombre del álbum *</label>
+          <input type="text" class="form-input" id="albumName" placeholder="Ej: Un Verano Sin Ti">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Artista *</label>
+          <select class="form-select" id="albumArtist">
+            <option value="">Seleccionar artista...</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Fecha de lanzamiento</label>
+          <input type="date" class="form-input" id="albumReleaseDate">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea class="form-input" id="albumDesc" placeholder="Descripción del álbum..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Género</label>
+          <select class="form-select" id="albumGenre">
+            <option value="Pop">🎤 Pop</option>
+            <option value="Rap">🎧 Rap</option>
+            <option value="Trap">🔥 Trap</option>
+            <option value="Reggaetón">💃 Reggaetón</option>
+            <option value="Electrónica">🎛️ Electrónica</option>
+            <option value="R&B">🎵 R&B</option>
+            <option value="Rock">🎸 Rock</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Portada del álbum</label>
+          <div class="image-upload-area" onclick="uploadImage('albumCover')">
+            <div class="upload-icon">💿</div>
+            <div class="upload-text">Toca para subir portada</div>
+          </div>
+          <div class="image-preview" id="albumCoverPreview"></div>
+          <input type="hidden" id="albumCoverUrl">
+        </div>
+        
+        <button class="submit-btn" onclick="saveAlbum()">💾 Guardar álbum</button>
+      </div>
+      
+      <div class="list-header">
+        <span class="list-title">💿 Todos los álbumes</span>
+        <span class="list-count" id="albumsCount">0</span>
+      </div>
+      <div class="item-list" id="albumsList">
+        <div class="empty-state">
+          <div class="empty-icon">💿</div>
+          <div>No hay álbumes aún</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Playlists Panel -->
+    <div class="panel" id="playlistsPanel">
+      <div class="form-section">
+        <div class="form-title">📋 Crear nueva playlist</div>
+        
+        <div class="form-group">
+          <label class="form-label">Nombre de la playlist *</label>
+          <input type="text" class="form-input" id="playlistName" placeholder="Ej: Éxitos 2024">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <textarea class="form-input" id="playlistDesc" placeholder="Descripción de la playlist..."></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Portada</label>
+          <div class="image-upload-area" onclick="uploadImage('playlistCover')">
+            <div class="upload-icon">🎨</div>
+            <div class="upload-text">Toca para subir portada</div>
+          </div>
+          <div class="image-preview" id="playlistCoverPreview"></div>
+          <input type="hidden" id="playlistCoverUrl">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Canciones en la playlist</label>
+          <div id="playlistSongSelector" style="max-height: 300px; overflow-y: auto; background: var(--d3); border-radius: 12px; padding: 12px;">
+            <!-- Canciones con checkbox se cargarán aquí -->
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Destacada en Home</label>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="switch" id="playlistFeaturedSwitch" onclick="toggleSwitch(this)"></div>
+            <span style="color: var(--gr); font-size: 13px;">Aparecerá en la sección principal</span>
+          </div>
+        </div>
+        
+        <button class="submit-btn" onclick="savePlaylist()">💾 Guardar playlist</button>
+      </div>
+      
+      <div class="list-header">
+        <span class="list-title">📋 Todas las playlists</span>
+        <span class="list-count" id="playlistsCount">0</span>
+      </div>
+      <div class="item-list" id="playlistsList">
+        <div class="empty-state">
+          <div class="empty-icon">📋</div>
+          <div>No hay playlists aún</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Banners Panel -->
+    <div class="panel" id="bannersPanel">
+      <div class="form-section">
+        <div class="form-title">🎯 Crear banner promocional</div>
+        
+        <div class="form-group">
+          <label class="form-label">Título del banner</label>
+          <input type="text" class="form-input" id="bannerTitle" placeholder="Ej: Nuevo lanzamiento">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Subtítulo</label>
+          <input type="text" class="form-input" id="bannerSubtitle" placeholder="Ej: Escucha lo nuevo de...">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Tipo de destino</label>
+          <select class="form-select" id="bannerType">
+            <option value="playlist">Playlist</option>
+            <option value="artist">Artista</option>
+            <option value="album">Álbum</option>
+            <option value="song">Canción</option>
+            <option value="url">URL externa</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Destino</label>
+          <select class="form-select" id="bannerTarget">
+            <option value="">Seleccionar destino...</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Imagen del banner</label>
+          <div class="image-upload-area" onclick="uploadImage('bannerImage')">
+            <div class="upload-icon">🖼️</div>
+            <div class="upload-text">Toca para subir banner</div>
+            <div class="upload-hint">Recomendado: 1200x400</div>
+          </div>
+          <div class="image-preview" id="bannerImagePreview"></div>
+          <input type="hidden" id="bannerImageUrl">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Color de fondo</label>
+          <div class="color-picker" id="bannerColorPicker">
+            <div class="color-option active" style="background:#1DB954;" onclick="selectBannerColor('#1DB954')"></div>
+            <div class="color-option" style="background:#e91e63;" onclick="selectBannerColor('#e91e63')"></div>
+            <div class="color-option" style="background:#9c27b0;" onclick="selectBannerColor('#9c27b0')"></div>
+            <div class="color-option" style="background:#2196f3;" onclick="selectBannerColor('#2196f3')"></div>
+            <div class="color-option" style="background:#ff5722;" onclick="selectBannerColor('#ff5722')"></div>
+            <div class="color-option" style="background:#009688;" onclick="selectBannerColor('#009688')"></div>
+          </div>
+          <input type="hidden" id="bannerColor" value="#1DB954">
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Activo</label>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div class="switch active" id="bannerActiveSwitch" onclick="toggleSwitch(this)"></div>
+            <span style="color: var(--gr); font-size: 13px;">Mostrar en la home</span>
+          </div>
+        </div>
+        
+        <button class="submit-btn" onclick="saveBanner()">💾 Guardar banner</button>
+      </div>
+      
+      <div class="list-header">
+        <span class="list-title">🎯 Banners activos</span>
+        <span class="list-count" id="bannersCount">0</span>
+      </div>
+      <div class="item-list" id="bannersList">
+        <div class="empty-state">
+          <div class="empty-icon">🎯</div>
+          <div>No hay banners aún</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Panel -->
+    <div class="panel" id="settingsPanel">
+      <div class="settings-group">
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">Nombre de la aplicación</div>
+            <div class="settings-desc">Aparece en el título y header</div>
+          </div>
+          <input type="text" class="form-input" id="appName" value="Streamify" style="width:150px;">
+        </div>
+        
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">Modo oscuro por defecto</div>
+            <div class="settings-desc">Los usuarios verán modo oscuro al entrar</div>
+          </div>
+          <div class="switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+        
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">Mostrar letras</div>
+            <div class="settings-desc">Permitir ver letras en el reproductor</div>
+          </div>
+          <div class="switch active" onclick="toggleSwitch(this)"></div>
+        </div>
+      </div>
+      
+      <div class="settings-group">
+        <div class="form-title" style="padding: 16px 20px;">🎨 Color de acento</div>
+        <div style="padding: 0 20px 20px;">
+          <div class="color-picker">
+            <div class="color-option active" style="background:#1DB954;" onclick="selectAccentColor('#1DB954')"></div>
+            <div class="color-option" style="background:#e91e63;" onclick="selectAccentColor('#e91e63')"></div>
+            <div class="color-option" style="background:#9c27b0;" onclick="selectAccentColor('#9c27b0')"></div>
+            <div class="color-option" style="background:#2196f3;" onclick="selectAccentColor('#2196f3')"></div>
+            <div class="color-option" style="background:#ff5722;" onclick="selectAccentColor('#ff5722')"></div>
+            <div class="color-option" style="background:#ff9800;" onclick="selectAccentColor('#ff9800')"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="settings-group">
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">Exportar datos</div>
+            <div class="settings-desc">Descargar todas las canciones como JSON</div>
+          </div>
+          <button class="submit-btn secondary" style="padding:10px 16px; width:auto;" onclick="exportData()">Exportar</button>
+        </div>
+        
+        <div class="settings-item">
+          <div>
+            <div class="settings-label">Importar datos</div>
+            <div class="settings-desc">Cargar canciones desde archivo JSON</div>
+          </div>
+          <button class="submit-btn secondary" style="padding:10px 16px; width:auto;" onclick="document.getElementById('importFile').click()">Importar</button>
+          <input type="file" id="importFile" accept=".json" style="display:none;" onchange="importData(event)">
+        </div>
+        
+        <div class="settings-item">
+          <div>
+            <div class="settings-label danger">Eliminar todos los datos</div>
+            <div class="settings-desc">Esta acción no se puede deshacer</div>
+          </div>
+          <button class="submit-btn" style="padding:10px 16px; width:auto; background: var(--danger);" onclick="deleteAllData()">Eliminar todo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <!-- Modal de confirmación -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModal()">
+    <div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-title" id="modalTitle">Confirmar</div>
+      <div class="modal-text" id="modalText">¿Estás seguro?</div>
+      <div class="modal-actions">
+        <button class="modal-btn" onclick="closeModal()">Cancelar</button>
+        <button class="modal-btn confirm" id="modalConfirmBtn" onclick="confirmAction()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Variables globales
+    let currentEditId = null;
+    let currentEditType = null;
+    let modalCallback = null;
+    let songs = [];
+    let artists = [];
+    let albums = [];
+    let playlists = [];
+    let banners = [];
+    let genreChart = null;
+    
+    const CLOUDINARY_CLOUD = 'dupylfzlj';
+    const CLOUDINARY_PRESET = 'Streamify';
+    const ADMIN_PASSWORD = 'Adrian2005@';
+    
+    // Inicialización
+    document.addEventListener('DOMContentLoaded', () => {
+      checkLoginStatus();
+    });
+    
+    function checkLoginStatus() {
+  const logged = localStorage.getItem('admin_logged');
+  if (logged === 'true') {
+    document.getElementById('mainContent').classList.add('visible');
+    document.getElementById('loginScreen').style.display = 'none';
+    loadAllData();
+  }
+}
+
+    
+    function login() {
+      const password = document.getElementById('passwordInput').value;
+      if (password === ADMIN_PASSWORD) {
+        localStorage.setItem('admin_logged', 'true');
+document.getElementById('mainContent').classList.add('visible');
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('loginError').textContent = '';
+        loadAllData();
+        showToast('✅ Acceso concedido');
+      } else {
+        document.getElementById('loginError').textContent = 'Contraseña incorrecta';
+      }
+    }
+    
+    function logout() {
+      localStorage.removeItem('admin_logged');
+      location.reload();
+    }
+    
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    function toggleSwitch(el) {
+      el.classList.toggle('active');
+    }
+    
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(tabId + 'Panel').classList.add('active');
+      
+      if (tabId === 'dashboard') updateDashboard();
+    }
+    
+    // Cloudinary Upload Widget
+    function uploadImage(type) {
+      cloudinary.openUploadWidget({
+        cloudName: CLOUDINARY_CLOUD,
+        uploadPreset: CLOUDINARY_PRESET,
+        sources: ['local', 'url', 'camera'],
+        multiple: false,
+        maxFiles: 1,
+        cropping: true,
+        croppingAspectRatio: 1,
+        showAdvancedOptions: false,
+        styles: {
+          palette: {
+            window: "#121212",
+            windowBorder: "#282828",
+            tabIcon: "#1DB954",
+            menuIcons: "#b3b3b3",
+            textDark: "#ffffff",
+            textLight: "#b3b3b3",
+            link: "#1DB954",
+            action: "#1DB954",
+            inactiveTabIcon: "#535353",
+            error: "#e91429",
+            inProgress: "#1DB954",
+            complete: "#1DB954",
+            sourceBg: "#181818"
+          }
+        }
+      }, (error, result) => {
+        if (!error && result && result.event === 'success') {
+          const url = result.info.secure_url;
+          document.getElementById(type + 'Url').value = url;
+          
+          const preview = document.getElementById(type + 'Preview');
+          preview.innerHTML = `
+            <div class="preview-item">
+              <img src="${url}" alt="Preview">
+              <button class="preview-remove" onclick="clearImage('${type}')">×</button>
+            </div>
+          `;
+          showToast('✅ Imagen subida correctamente');
+        }
+      });
+    }
+    
+    function clearImage(type) {
+      document.getElementById(type + 'Url').value = '';
+      document.getElementById(type + 'Preview').innerHTML = '';
+    }
+    
+    // Cargar datos
+    async function loadAllData() {
+      await loadSongs();
+      await loadArtists();
+      await loadAlbums();
+      await loadPlaylists();
+      await loadBanners();
+      updateAllSelects();
+      updateDashboard();
+    }
+    
+    async function loadSongs() {
+      try {
+        const q = query(collection(db, 'songs'), orderBy('order', 'asc'));
+        const snapshot = await getDocs(q);
+        songs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderSongsList();
+        document.getElementById('totalSongs').textContent = songs.length;
+        document.getElementById('songsCount').textContent = songs.length;
+      } catch (e) {
+        console.error('Error loading songs:', e);
+      }
+    }
+    
+    async function loadArtists() {
+      try {
+        const snapshot = await getDocs(collection(db, 'artists'));
+        artists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderArtistsList();
+        document.getElementById('totalArtists').textContent = artists.length;
+        document.getElementById('artistsCount').textContent = artists.length;
+      } catch (e) {
+        console.error('Error loading artists:', e);
+      }
+    }
+    
+    async function loadAlbums() {
+      try {
+        const snapshot = await getDocs(collection(db, 'albums'));
+        albums = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderAlbumsList();
+        document.getElementById('totalAlbums').textContent = albums.length;
+        document.getElementById('albumsCount').textContent = albums.length;
+      } catch (e) {
+        console.error('Error loading albums:', e);
+      }
+    }
+    
+    async function loadPlaylists() {
+      try {
+        const snapshot = await getDocs(collection(db, 'playlists'));
+        playlists = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderPlaylistsList();
+        document.getElementById('totalPlaylists').textContent = playlists.length;
+        document.getElementById('playlistsCount').textContent = playlists.length;
+      } catch (e) {
+        console.error('Error loading playlists:', e);
+      }
+    }
+    
+    async function loadBanners() {
+      try {
+        const snapshot = await getDocs(collection(db, 'banners'));
+        banners = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        renderBannersList();
+        document.getElementById('bannersCount').textContent = banners.length;
+      } catch (e) {
+        console.error('Error loading banners:', e);
+      }
+    }
+    
+    // Guardar datos
+    async function saveSong() {
+      const title = document.getElementById('songTitle').value.trim();
+      const artist = document.getElementById('songArtist').value;
+      const album = document.getElementById('songAlbum').value;
+      const genre = document.getElementById('songGenre').value;
+      const url = document.getElementById('songUrl').value.trim();
+      const lyrics = document.getElementById('songLyrics').value.trim();
+      const duration = parseInt(document.getElementById('songDuration').value) || 180;
+      const coverUrl = document.getElementById('songCoverUrl').value;
+      const featured = document.getElementById('songFeaturedSwitch').classList.contains('active');
+      
+      if (!title || !artist || !genre || !url) {
+        showToast('❌ Completa todos los campos obligatorios');
+        return;
+      }
+      
+const artistName = document.getElementById('songArtist').options[document.getElementById('songArtist').selectedIndex].text;
+
+const songData = {
+  title,
+  artist: artistName,
+  artistId: artist,
+  artistName,
+  album: album || null,
+  albumId: album || null,
+  genre,
+  url,
+  lyrics,
+  duration,
+  coverUrl,
+  featured,
+  plays: 0,
+  order: songs.length,
+  createdAt: new Date().toISOString()
+};
+
+      
+      try {
+        if (currentEditId) {
+          await updateDoc(doc(db, 'songs', currentEditId), songData);
+          showToast('✅ Canción actualizada');
+        } else {
+          await addDoc(collection(db, 'songs'), songData);
+          showToast('✅ Canción guardada');
+        }
+        
+        clearSongForm();
+        await loadSongs();
+        currentEditId = null;
+      } catch (e) {
+        showToast('❌ Error al guardar');
+        console.error(e);
+      }
+    }
+    
+    async function saveArtist() {
+      const name = document.getElementById('artistName').value.trim();
+      const genre = document.getElementById('artistGenre').value;
+      const bio = document.getElementById('artistBio').value.trim();
+      const monthly = document.getElementById('artistMonthly').value.trim() || '0';
+      const instagram = document.getElementById('artistInstagram').value.trim();
+      const youtube = document.getElementById('artistYoutube').value.trim();
+      const spotify = document.getElementById('artistSpotify').value.trim();
+      const avatarUrl = document.getElementById('artistAvatarUrl').value;
+      const bannerUrl = document.getElementById('artistBannerUrl').value;
+      const verified = document.getElementById('artistVerifiedSwitch').classList.contains('active');
+      
+      if (!name || !genre) {
+        showToast('❌ Nombre y género son obligatorios');
+        return;
+      }
+      
+      const artistData = {
+        name,
+        genre,
+        bio,
+        monthlyListeners: monthly,
+        social: { instagram, youtube, spotify },
+        avatarUrl,
+        bannerUrl,
+        verified,
+        createdAt: new Date().toISOString()
+      };
+      
+      try {
+        if (currentEditId) {
+          await updateDoc(doc(db, 'artists', currentEditId), artistData);
+          showToast('✅ Artista actualizado');
+        } else {
+          await addDoc(collection(db, 'artists'), artistData);
+          showToast('✅ Artista guardado');
+        }
+        
+        clearArtistForm();
+        await loadArtists();
+        currentEditId = null;
+      } catch (e) {
+        showToast('❌ Error al guardar');
+        console.error(e);
+      }
+    }
+    
+    async function saveAlbum() {
+      const name = document.getElementById('albumName').value.trim();
+      const artist = document.getElementById('albumArtist').value;
+      const releaseDate = document.getElementById('albumReleaseDate').value;
+      const desc = document.getElementById('albumDesc').value.trim();
+      const genre = document.getElementById('albumGenre').value;
+      const coverUrl = document.getElementById('albumCoverUrl').value;
+      
+      if (!name || !artist) {
+        showToast('❌ Nombre y artista son obligatorios');
+        return;
+      }
+      
+      const albumData = {
+        name,
+        artist,
+        artistId: artist,
+        releaseDate,
+        description: desc,
+        genre,
+        coverUrl,
+        createdAt: new Date().toISOString()
+      };
+      
+      try {
+        if (currentEditId) {
+          await updateDoc(doc(db, 'albums', currentEditId), albumData);
+          showToast('✅ Álbum actualizado');
+        } else {
+          await addDoc(collection(db, 'albums'), albumData);
+          showToast('✅ Álbum guardado');
+        }
+        
+        clearAlbumForm();
+        await loadAlbums();
+        currentEditId = null;
+      } catch (e) {
+        showToast('❌ Error al guardar');
+        console.error(e);
+      }
+    }
+    
+    async function savePlaylist() {
+      const name = document.getElementById('playlistName').value.trim();
+      const desc = document.getElementById('playlistDesc').value.trim();
+      const coverUrl = document.getElementById('playlistCoverUrl').value;
+      const featured = document.getElementById('playlistFeaturedSwitch').classList.contains('active');
+      
+      const selectedSongs = [];
+      document.querySelectorAll('#playlistSongSelector input:checked').forEach(cb => {
+        selectedSongs.push(cb.value);
+      });
+      
+      if (!name) {
+        showToast('❌ El nombre es obligatorio');
+        return;
+      }
+      
+      const playlistData = {
+        name,
+        description: desc,
+        coverUrl,
+        songs: selectedSongs,
+        featured,
+        createdAt: new Date().toISOString()
+      };
+      
+      try {
+        if (currentEditId) {
+          await updateDoc(doc(db, 'playlists', currentEditId), playlistData);
+          showToast('✅ Playlist actualizada');
+        } else {
+          await addDoc(collection(db, 'playlists'), playlistData);
+          showToast('✅ Playlist guardada');
+        }
+        
+        clearPlaylistForm();
+        await loadPlaylists();
+        currentEditId = null;
+      } catch (e) {
+        showToast('❌ Error al guardar');
+        console.error(e);
+      }
+    }
+    
+    async function saveBanner() {
+      const title = document.getElementById('bannerTitle').value.trim();
+      const subtitle = document.getElementById('bannerSubtitle').value.trim();
+      const type = document.getElementById('bannerType').value;
+      const target = document.getElementById('bannerTarget').value;
+      const imageUrl = document.getElementById('bannerImageUrl').value;
+      const color = document.getElementById('bannerColor').value;
+      const active = document.getElementById('bannerActiveSwitch').classList.contains('active');
+      
+      if (!title || !target) {
+        showToast('❌ Título y destino son obligatorios');
+        return;
+      }
+      
+      const bannerData = {
+        title,
+        subtitle,
+        type,
+        target,
+        imageUrl,
+        backgroundColor: color,
+        active,
+        createdAt: new Date().toISOString()
+      };
+      
+      try {
+        if (currentEditId) {
+          await updateDoc(doc(db, 'banners', currentEditId), bannerData);
+          showToast('✅ Banner actualizado');
+        } else {
+          await addDoc(collection(db, 'banners'), bannerData);
+          showToast('✅ Banner guardado');
+        }
+        
+        clearBannerForm();
+        await loadBanners();
+        currentEditId = null;
+      } catch (e) {
+        showToast('❌ Error al guardar');
+        console.error(e);
+      }
+    }
+    
+    // Renderizar listas
+    function renderSongsList() {
+      const container = document.getElementById('songsList');
+      if (songs.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><div>No hay canciones aún</div></div>';
+        return;
+      }
+      
+      container.innerHTML = songs.map(song => `
+        <div class="list-item" data-id="${song.id}">
+          <span class="drag-handle">☰</span>
+          <div class="item-image">
+            ${song.coverUrl ? `<img src="${song.coverUrl}" alt="${song.title}">` : '🎵'}
+          </div>
+          <div class="item-info">
+            <div class="item-title">${song.title}</div>
+            <div class="item-subtitle">${song.artist} · ${song.genre}</div>
+          </div>
+          <div class="item-actions">
+            ${song.featured ? '<span class="badge success">⭐</span>' : ''}
+            <button class="action-btn" onclick="editSong('${song.id}')">✏️</button>
+            <button class="action-btn danger" onclick="deleteItem('songs', '${song.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+      
+      new Sortable(container, {
+        handle: '.drag-handle',
+        animation: 150,
+        onEnd: async (evt) => {
+          const items = [...evt.to.children];
+          for (let i = 0; i < items.length; i++) {
+            const id = items[i].dataset.id;
+            await updateDoc(doc(db, 'songs', id), { order: i });
+          }
+          await loadSongs();
+        }
+      });
+    }
+    
+    function renderArtistsList() {
+      const container = document.getElementById('artistsList');
+      if (artists.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">🎤</div><div>No hay artistas aún</div></div>';
+        return;
+      }
+      
+      container.innerHTML = artists.map(artist => `
+        <div class="list-item">
+          <div class="item-image">
+            ${artist.avatarUrl ? `<img src="${artist.avatarUrl}" alt="${artist.name}">` : '🎤'}
+          </div>
+          <div class="item-info">
+            <div class="item-title">${artist.name} ${artist.verified ? '✓' : ''}</div>
+            <div class="item-subtitle">${artist.genre} · ${artist.monthlyListeners || '0'} oyentes</div>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn" onclick="editArtist('${artist.id}')">✏️</button>
+            <button class="action-btn danger" onclick="deleteItem('artists', '${artist.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function renderAlbumsList() {
+      const container = document.getElementById('albumsList');
+      if (albums.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">💿</div><div>No hay álbumes aún</div></div>';
+        return;
+      }
+      
+      container.innerHTML = albums.map(album => `
+        <div class="list-item">
+          <div class="item-image">
+            ${album.coverUrl ? `<img src="${album.coverUrl}" alt="${album.name}">` : '💿'}
+          </div>
+          <div class="item-info">
+            <div class="item-title">${album.name}</div>
+            <div class="item-subtitle">${album.artist}</div>
+          </div>
+          <div class="item-actions">
+            <button class="action-btn" onclick="editAlbum('${album.id}')">✏️</button>
+            <button class="action-btn danger" onclick="deleteItem('albums', '${album.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function renderPlaylistsList() {
+      const container = document.getElementById('playlistsList');
+      if (playlists.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div>No hay playlists aún</div></div>';
+        return;
+      }
+      
+      container.innerHTML = playlists.map(playlist => `
+        <div class="list-item">
+          <div class="item-image">
+            ${playlist.coverUrl ? `<img src="${playlist.coverUrl}" alt="${playlist.name}">` : '📋'}
+          </div>
+          <div class="item-info">
+            <div class="item-title">${playlist.name}</div>
+            <div class="item-subtitle">${playlist.songs?.length || 0} canciones</div>
+          </div>
+          <div class="item-actions">
+            ${playlist.featured ? '<span class="badge success">⭐</span>' : ''}
+            <button class="action-btn" onclick="editPlaylist('${playlist.id}')">✏️</button>
+            <button class="action-btn danger" onclick="deleteItem('playlists', '${playlist.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    function renderBannersList() {
+      const container = document.getElementById('bannersList');
+      if (banners.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">🎯</div><div>No hay banners aún</div></div>';
+        return;
+      }
+      
+      container.innerHTML = banners.map(banner => `
+        <div class="list-item">
+          <div class="item-image">
+            ${banner.imageUrl ? `<img src="${banner.imageUrl}" alt="${banner.title}">` : '🎯'}
+          </div>
+          <div class="item-info">
+            <div class="item-title">${banner.title}</div>
+            <div class="item-subtitle">${banner.subtitle || ''}</div>
+          </div>
+          <div class="item-actions">
+            ${banner.active ? '<span class="badge success">Activo</span>' : '<span class="badge">Inactivo</span>'}
+            <button class="action-btn" onclick="editBanner('${banner.id}')">✏️</button>
+            <button class="action-btn danger" onclick="deleteItem('banners', '${banner.id}')">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+    
+    // Actualizar selects
+    function updateAllSelects() {
+      // Artistas en selector de canciones
+      const songArtistSelect = document.getElementById('songArtist');
+      songArtistSelect.innerHTML = '<option value="">Seleccionar artista...</option>' +
+        artists.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+      
+      // Álbumes
+      const songAlbumSelect = document.getElementById('songAlbum');
+      songAlbumSelect.innerHTML = '<option value="">Seleccionar álbum...</option>' +
+        albums.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+      
+      // Artista en álbum
+      const albumArtistSelect = document.getElementById('albumArtist');
+      albumArtistSelect.innerHTML = '<option value="">Seleccionar artista...</option>' +
+        artists.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
+      
+      // Selector de canciones para playlist
+      const playlistSelector = document.getElementById('playlistSongSelector');
+      playlistSelector.innerHTML = songs.map(song => `
+        <div style="display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--d4);">
+          <input type="checkbox" value="${song.id}" id="song_${song.id}">
+          <label for="song_${song.id}" style="flex:1; cursor:pointer;">
+            <div style="font-weight:500;">${song.title}</div>
+            <div style="font-size:12px; color: var(--gr);">${song.artist}</div>
+          </label>
+        </div>
+      `).join('');
+    }
+    
+    // Dashboard
+    function updateDashboard() {
+      // Actualizar contadores
+      document.getElementById('totalSongs').textContent = songs.length;
+      document.getElementById('totalArtists').textContent = artists.length;
+      document.getElementById('totalAlbums').textContent = albums.length;
+      document.getElementById('totalPlaylists').textContent = playlists.length;
+      
+      // Gráfico de géneros
+      const genreCounts = {};
+      songs.forEach(s => { genreCounts[s.genre] = (genreCounts[s.genre] || 0) + 1; });
+      
+      const ctx = document.getElementById('genreChart').getContext('2d');
+      if (genreChart) genreChart.destroy();
+      
+      genreChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: Object.keys(genreCounts),
+          datasets: [{
+            data: Object.values(genreCounts),
+            backgroundColor: ['#1DB954', '#e91e63', '#9c27b0', '#2196f3', '#ff5722', '#009688', '#ff9800', '#00bcd4'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom', labels: { color: '#fff', font: { size: 11 } } }
+          }
+        }
+      });
+      
+      // Canciones recientes
+      const recentContainer = document.getElementById('recentSongsList');
+      const recent = [...songs].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 5);
+      document.getElementById('recentCount').textContent = recent.length;
+      
+      if (recent.length === 0) {
+        recentContainer.innerHTML = '<div class="empty-state"><div class="empty-icon">🎵</div><div>No hay canciones aún</div></div>';
+      } else {
+        recentContainer.innerHTML = recent.map(song => `
+          <div class="list-item">
+            <div class="item-image">
+              ${song.coverUrl ? `<img src="${song.coverUrl}" alt="${song.title}">` : '🎵'}
+            </div>
+            <div class="item-info">
+              <div class="item-title">${song.title}</div>
+              <div class="item-subtitle">${song.artist}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+    
+    // Funciones auxiliares
+    function selectBannerColor(color) {
+      document.querySelectorAll('#bannerColorPicker .color-option').forEach(el => el.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('bannerColor').value = color;
+    }
+    
+    function selectAccentColor(color) {
+      document.querySelectorAll('#settingsPanel .color-option').forEach(el => el.classList.remove('active'));
+      event.target.classList.add('active');
+      document.documentElement.style.setProperty('--g', color);
+      localStorage.setItem('accent_color', color);
+      showToast('✅ Color actualizado');
+    }
+    
+    function filterSongs(query) {
+      const filtered = songs.filter(s => 
+        s.title.toLowerCase().includes(query.toLowerCase()) ||
+        s.artist.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      const container = document.getElementById('songsList');
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div>No se encontraron canciones</div></div>';
+      } else {
+        container.innerHTML = filtered.map(song => `
+          <div class="list-item">
+            <div class="item-image">
+              ${song.coverUrl ? `<img src="${song.coverUrl}" alt="${song.title}">` : '🎵'}
+            </div>
+            <div class="item-info">
+              <div class="item-title">${song.title}</div>
+              <div class="item-subtitle">${song.artist}</div>
+            </div>
+            <div class="item-actions">
+              <button class="action-btn" onclick="editSong('${song.id}')">✏️</button>
+              <button class="action-btn danger" onclick="deleteItem('songs', '${song.id}')">🗑️</button>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+    
+    function quickAddArtist() {
+      switchTab('artists');
+      showToast('Completa el formulario de artista');
+    }
+    
+    function clearSongForm() {
+      document.getElementById('songTitle').value = '';
+      document.getElementById('songArtist').value = '';
+      document.getElementById('songAlbum').value = '';
+      document.getElementById('songUrl').value = '';
+      document.getElementById('songLyrics').value = '';
+      document.getElementById('songDuration').value = '';
+      clearImage('songCover');
+      document.getElementById('songFeaturedSwitch').classList.remove('active');
+    }
+    
+    function clearArtistForm() {
+      document.getElementById('artistName').value = '';
+      document.getElementById('artistBio').value = '';
+      document.getElementById('artistMonthly').value = '';
+      document.getElementById('artistInstagram').value = '';
+      document.getElementById('artistYoutube').value = '';
+      document.getElementById('artistSpotify').value = '';
+      clearImage('artistAvatar');
+      clearImage('artistBanner');
+    }
+    
+    function clearAlbumForm() {
+      document.getElementById('albumName').value = '';
+      document.getElementById('albumArtist').value = '';
+      document.getElementById('albumReleaseDate').value = '';
+      document.getElementById('albumDesc').value = '';
+      clearImage('albumCover');
+    }
+    
+    function clearPlaylistForm() {
+      document.getElementById('playlistName').value = '';
+      document.getElementById('playlistDesc').value = '';
+      clearImage('playlistCover');
+      document.getElementById('playlistFeaturedSwitch').classList.remove('active');
+    }
+    
+    function clearBannerForm() {
+      document.getElementById('bannerTitle').value = '';
+      document.getElementById('bannerSubtitle').value = '';
+      document.getElementById('bannerTarget').value = '';
+      clearImage('bannerImage');
+    }
+    
+    async function deleteItem(collectionName, id) {
+      modalCallback = async () => {
+        try {
+          await deleteDoc(doc(db, collectionName, id));
+          showToast('✅ Eliminado correctamente');
+          await loadAllData();
+        } catch (e) {
+          showToast('❌ Error al eliminar');
+        }
+        closeModal();
+      };
+      
+      document.getElementById('modalTitle').textContent = 'Confirmar eliminación';
+      document.getElementById('modalText').textContent = '¿Estás seguro de que quieres eliminar este elemento?';
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+    
+    function confirmAction() {
+      if (modalCallback) modalCallback();
+    }
+    
+    function closeModal() {
+      document.getElementById('modalOverlay').style.display = 'none';
+      modalCallback = null;
+    }
+    
+    function exportData() {
+      const data = { songs, artists, albums, playlists, banners };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `streamify_backup_${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      showToast('✅ Datos exportados');
+    }
+    
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          // Aquí podrías implementar la importación masiva
+          showToast('✅ Importación iniciada (implementar lógica)');
+        } catch (err) {
+          showToast('❌ Archivo inválido');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+    
+    async function deleteAllData() {
+      modalCallback = async () => {
+        showToast('⚠️ Función en desarrollo');
+        closeModal();
+      };
+      
+      document.getElementById('modalTitle').textContent = '⚠️ Eliminar todo';
+      document.getElementById('modalText').textContent = 'Esta acción eliminará TODOS los datos permanentemente. ¿Estás completamente seguro?';
+      document.getElementById('modalOverlay').style.display = 'flex';
+    }
+    
+    // Funciones de edición
+function editSong(id) {
+  const song = songs.find(s => s.id === id);
+  if (!song) return;
+  
+  currentEditId = id;
+  document.getElementById('songTitle').value = song.title || '';
+  document.getElementById('songUrl').value = song.url || '';
+  document.getElementById('songLyrics').value = song.lyrics || '';
+  document.getElementById('songDuration').value = song.duration || '';
+  document.getElementById('songCoverUrl').value = song.coverUrl || '';
+  
+  if (song.coverUrl) {
+    document.getElementById('songCoverPreview').innerHTML = `
+      <div class="preview-item">
+        <img src="${song.coverUrl}" alt="Preview">
+        <button class="preview-remove" onclick="clearImage('songCover')">×</button>
+      </div>
+    `;
+  }
+  
+  if (song.featured) {
+    document.getElementById('songFeaturedSwitch').classList.add('active');
+  } else {
+    document.getElementById('songFeaturedSwitch').classList.remove('active');
+  }
+  
+  switchTab('songs');
+  showToast('✏️ Editando: ' + song.title);
+}
+
+function editArtist(id) {
+  const artist = artists.find(a => a.id === id);
+  if (!artist) return;
+  currentEditId = id;
+  document.getElementById('artistName').value = artist.name || '';
+  document.getElementById('artistGenre').value = artist.genre || '';
+  document.getElementById('artistBio').value = artist.bio || '';
+  document.getElementById('artistMonthly').value = artist.monthlyListeners || '';
+  document.getElementById('artistInstagram').value = artist.social?.instagram || '';
+  document.getElementById('artistYoutube').value = artist.social?.youtube || '';
+  document.getElementById('artistSpotify').value = artist.social?.spotify || '';
+  document.getElementById('artistAvatarUrl').value = artist.avatarUrl || '';
+  document.getElementById('artistBannerUrl').value = artist.bannerUrl || '';
+  
+  if (artist.verified) {
+    document.getElementById('artistVerifiedSwitch').classList.add('active');
+  } else {
+    document.getElementById('artistVerifiedSwitch').classList.remove('active');
+  }
+  
+  if (artist.avatarUrl) {
+    document.getElementById('artistAvatarPreview').innerHTML = `
+      <div class="preview-item">
+        <img src="${artist.avatarUrl}" alt="Avatar">
+        <button class="preview-remove" onclick="clearImage('artistAvatar')">×</button>
+      </div>
+    `;
+  }
+  
+  switchTab('artists');
+  showToast('✏️ Editando: ' + artist.name);
+}
+
+function editAlbum(id) {
+  const album = albums.find(a => a.id === id);
+  if (!album) return;
+  currentEditId = id;
+  document.getElementById('albumName').value = album.name || '';
+  document.getElementById('albumReleaseDate').value = album.releaseDate || '';
+  document.getElementById('albumDesc').value = album.description || '';
+  document.getElementById('albumGenre').value = album.genre || '';
+  document.getElementById('albumCoverUrl').value = album.coverUrl || '';
+  
+  if (album.coverUrl) {
+    document.getElementById('albumCoverPreview').innerHTML = `
+      <div class="preview-item">
+        <img src="${album.coverUrl}" alt="Cover">
+        <button class="preview-remove" onclick="clearImage('albumCover')">×</button>
+      </div>
+    `;
+  }
+  
+  switchTab('albums');
+  showToast('✏️ Editando: ' + album.name);
+}
+
+function editPlaylist(id) {
+  const playlist = playlists.find(p => p.id === id);
+  if (!playlist) return;
+  currentEditId = id;
+  document.getElementById('playlistName').value = playlist.name || '';
+  document.getElementById('playlistDesc').value = playlist.description || '';
+  document.getElementById('playlistCoverUrl').value = playlist.coverUrl || '';
+  
+  if (playlist.featured) {
+    document.getElementById('playlistFeaturedSwitch').classList.add('active');
+  } else {
+    document.getElementById('playlistFeaturedSwitch').classList.remove('active');
+  }
+  
+  if (playlist.coverUrl) {
+    document.getElementById('playlistCoverPreview').innerHTML = `
+      <div class="preview-item">
+        <img src="${playlist.coverUrl}" alt="Cover">
+        <button class="preview-remove" onclick="clearImage('playlistCover')">×</button>
+      </div>
+    `;
+  }
+  
+  switchTab('playlists');
+  showToast('✏️ Editando: ' + playlist.name);
+}
+
+function editBanner(id) {
+  const banner = banners.find(b => b.id === id);
+  if (!banner) return;
+  currentEditId = id;
+  document.getElementById('bannerTitle').value = banner.title || '';
+  document.getElementById('bannerSubtitle').value = banner.subtitle || '';
+  document.getElementById('bannerType').value = banner.type || 'playlist';
+  document.getElementById('bannerColor').value = banner.backgroundColor || '#1DB954';
+  document.getElementById('bannerImageUrl').value = banner.imageUrl || '';
+  
+  if (banner.active) {
+    document.getElementById('bannerActiveSwitch').classList.add('active');
+  } else {
+    document.getElementById('bannerActiveSwitch').classList.remove('active');
+  }
+  
+  if (banner.imageUrl) {
+    document.getElementById('bannerImagePreview').innerHTML = `
+      <div class="preview-item">
+        <img src="${banner.imageUrl}" alt="Banner">
+        <button class="preview-remove" onclick="clearImage('bannerImage')">×</button>
+      </div>
+    `;
+  }
+  
+  switchTab('banners');
+  showToast('✏️ Editando: ' + banner.title);
+}
+    
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+<script>eruda.init();</script>
+</body>
+</html>
