@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <title>Streamify · Iniciar sesión</title>
+  <!-- Firebase Auth -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, GithubAuthProvider, OAuthProvider, signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    const firebaseConfig = {
+      apiKey: "AIzaSyAP5pHkk4Cm5-d6btJCN1MSLQBH699cV-0",
+      authDomain: "project-8fc84ba4-98a9-4394-b66.firebaseapp.com",
+      projectId: "project-8fc84ba4-98a9-4394-b66",
+      storageBucket: "project-8fc84ba4-98a9-4394-b66.firebasestorage.app",
+      messagingSenderId: "873347768381",
+      appId: "1:873347768381:web:75cdd37df970ba14984a54"
+    };
+    
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    window.db = db;
+    window.doc = doc;
+    window.setDoc = setDoc;
+    window.getDoc = getDoc;
+    
+    window.auth = auth;
+    window.GoogleAuthProvider = GoogleAuthProvider;
+    window.FacebookAuthProvider = FacebookAuthProvider;
+    window.TwitterAuthProvider = TwitterAuthProvider;
+    window.GithubAuthProvider = GithubAuthProvider;
+    window.OAuthProvider = OAuthProvider;
+    window.signInWithPopup = signInWithPopup;
+    window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+    window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+    window.sendPasswordResetEmail = sendPasswordResetEmail;
+  </script>
+  <style>
+    :root {
+      --g: #1DB954;
+      --g-dark: #0e6b31;
+      --bk: #000;
+      --d: #121212;
+      --d2: #181818;
+      --d3: #282828;
+      --d4: #3e3e3e;
+      --w: #fff;
+      --gr: #b3b3b3;
+      --gr2: #535353;
+      --premium: linear-gradient(135deg, #1DB954 0%, #1ed760 50%, #4a9eff 100%);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: var(--bk);
+      color: var(--w);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Fondo animado */
+    .bg-gradient {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, #0a2a1a 0%, #000 80%);
+      z-index: -2;
+    }
+
+    .bg-particles {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--g);
+      border-radius: 50%;
+      animation: float 15s linear infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Contenedor principal */
+    .login-container {
+      width: 100%;
+      max-width: 460px;
+      z-index: 10;
+      animation: fadeInUp 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes fadeInUp {
+      0% { opacity: 0; transform: translateY(30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Logo */
+    .logo-section {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .logo-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--premium);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 30px rgba(29, 185, 84, 0.3);
+    }
+
+    .logo-icon svg {
+      width: 28px;
+      height: 28px;
+      fill: white;
+    }
+
+    .logo-text {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      background: var(--premium);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .logo-sub {
+      font-size: 14px;
+      color: var(--gr);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Tarjeta principal */
+    .login-card {
+      background: var(--d2);
+      border-radius: 32px;
+      padding: 32px 28px;
+      border: 1px solid var(--d3);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 28px;
+      background: var(--d3);
+      padding: 4px;
+      border-radius: 40px;
+    }
+
+    .tab {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 12px;
+      color: var(--gr);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 40px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .tab.active {
+      background: var(--g);
+      color: black;
+      box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+    }
+
+    /* Formularios */
+    .form-panel {
+      display: none;
+    }
+
+    .form-panel.active {
+      display: block;
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gr);
+      margin-bottom: 6px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      fill: var(--gr2);
+    }
+
+    .input-field {
+      width: 100%;
+      background: var(--d3);
+      border: 1.5px solid transparent;
+      border-radius: 16px;
+      padding: 16px 16px 16px 50px;
+      color: white;
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .input-field:focus {
+      border-color: var(--g);
+      background: var(--d4);
+    }
+
+    .input-field::placeholder {
+      color: var(--gr2);
+    }
+
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 13px;
+      color: var(--g);
+      text-decoration: none;
+      margin-top: 6px;
+      font-weight: 500;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .btn-primary {
+      width: 100%;
+      background: var(--g);
+      border: none;
+      border-radius: 40px;
+      padding: 16px;
+      color: black;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 24px;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4);
+    }
+
+    /* Divisor */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 28px 0 24px;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--d4);
+    }
+
+    .divider-text {
+      font-size: 12px;
+      color: var(--gr2);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    /* Botones sociales */
+    .social-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .social-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: var(--d3);
+      border: 1px solid var(--d4);
+      border-radius: 40px;
+      padding: 14px 12px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .social-btn:hover {
+      background: var(--d4);
+      transform: translateY(-2px);
+    }
+
+    .social-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .social-btn.google svg { fill: #4285F4; }
+    .social-btn.facebook { background: #1877F2; border-color: #1877F2; }
+    .social-btn.facebook svg { fill: white; }
+    .social-btn.apple { background: #000; border-color: #333; }
+    .social-btn.apple svg { fill: white; }
+    .social-btn.twitter { background: #000; border-color: #333; }
+    .social-btn.twitter svg { fill: white; }
+    .social-btn.github { background: #24292e; border-color: #24292e; }
+    .social-btn.github svg { fill: white; }
+    .social-btn.microsoft svg { fill: #00a4ef; }
+
+    /* Footer */
+    .login-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--gr2);
+    }
+
+    .login-footer a {
+      color: var(--g);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--d2);
+      color: white;
+      padding: 14px 28px;
+      border-radius: 60px;
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+      z-index: 1000;
+      border: 1px solid var(--g);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #toast.error {
+      border-color: #e91429;
+      background: #1a0a0a;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: black;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Back button */
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      width: 44px;
+      height: 44px;
+      background: var(--d2);
+      border: 1px solid var(--d3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .back-btn:hover {
+      background: var(--d3);
+      transform: scale(1.05);
+    }
+
+    .back-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 24px 20px;
+      }
+      .social-grid {
+        grid-template-columns: 1fr;
+      }
+      .social-btn {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botón volver -->
+  <a href="index.html" class="back-btn">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  </a>
+
+  <!-- Fondo -->
+  <div class="bg-gradient"></div>
+  <div class="bg-particles" id="particles"></div>
+
+  <div class="login-container">
+    <!-- Logo -->
+    <div class="logo-section">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+          </svg>
+        </div>
+        <span class="logo-text">Streamify</span>
+      </div>
+      <div class="logo-sub">MÚSICA SIN LÍMITES</div>
+    </div>
+
+    <!-- Tarjeta -->
+    <div class="login-card">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="login">Iniciar sesión</button>
+        <button class="tab" data-tab="register">Registrarse</button>
+      </div>
+
+      <!-- Panel Login -->
+      <div class="form-panel active" id="loginPanel">
+        <form onsubmit="handleLogin(event)">
+          <div class="input-group">
+            <label class="input-label">Correo electrónico</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <input type="email" class="input-field" id="loginEmail" placeholder="tu@email.com" required>
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Contraseña</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+              <input type="password" class="input-field" id="loginPassword" placeholder="••••••••" required>
+            </div>
+            <a href="#" class="forgot-link" onclick="showForgotPassword()">¿Olvidaste tu contraseña?</a>
+          </div>
+          <button type="submit" class="btn-primary" id="loginBtn">Iniciar sesión</button>
+        </form>
+      </div>
+
+      <!-- Panel Registro -->
+      <div class="form-panel" id="registerPanel">
+        <form onsubmit="handleRegister(event)">
+          <div class="input-group">
+            <label class="input-label">Nombre de usuario</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+              <input type="text" class="input-field" id="registerName" placeholder="StreamifyUser" required>
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Correo electrónico</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              <input type="email" class="input-field" id="registerEmail" placeholder="tu@email.com" required>
+            </div>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Contraseña</label>
+            <div class="input-wrapper">
+              <svg class="input-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/></svg>
+              <input type="password" class="input-field" id="registerPassword" placeholder="Mínimo 6 caracteres" required minlength="6">
+            </div>
+          </div>
+          <button type="submit" class="btn-primary" id="registerBtn">Crear cuenta</button>
+        </form>
+      </div>
+
+      <!-- Divisor -->
+      <div class="divider">
+        <div class="divider-line"></div>
+        <span class="divider-text">o continúa con</span>
+        <div class="divider-line"></div>
+      </div>
+
+      <!-- Botones sociales -->
+      <div class="social-grid">
+        <button class="social-btn google" onclick="signInWithGoogle()">
+          <svg viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Google
+        </button>
+        <button class="social-btn facebook" onclick="signInWithFacebook()">
+          <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Facebook
+        </button>
+        <button class="social-btn apple" onclick="signInWithApple()">
+          <svg viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.88-3.08.38-1.09-.5-2.08-.52-3.24 0-1.44.62-2.2.44-3.06-.38C2.7 15.03 3.87 7.04 9.05 6.7c1.28.07 2.17.7 2.93.7.75 0 1.89-.87 3.19-.74 1.35.11 2.37.65 3.03 1.64-2.78 1.52-2.37 4.87.53 5.81-.63 1.66-1.45 3.32-2.84 4.17h.01zM14.53 4.6c.19-1.33-.48-2.47-1.25-3.41-.97-.9-2.56-1.18-3.68-.86.15 1.4.64 2.57 1.55 3.34.93.81 2.51 1.16 3.38.93z"/></svg>
+          Apple
+        </button>
+        <button class="social-btn twitter" onclick="signInWithTwitter()">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          X
+        </button>
+        <button class="social-btn github" onclick="signInWithGithub()">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          GitHub
+        </button>
+        <button class="social-btn microsoft" onclick="signInWithMicrosoft()">
+          <svg viewBox="0 0 24 24"><path d="M11.4 24H0V12.6h11.4V24zM24 24H12.6V12.6H24V24zM11.4 11.4H0V0h11.4v11.4zm12.6 0H12.6V0H24v11.4z"/></svg>
+          Microsoft
+        </button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      Al continuar, aceptas nuestros <a href="#">Términos</a> y <a href="#">Privacidad</a>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast"></div>
+
+  <script>
+    // Partículas de fondo
+    (function() {
+      const container = document.getElementById('particles');
+      for (let i = 0; i < 40; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDelay = Math.random() * 15 + 's';
+        p.style.animationDuration = (10 + Math.random() * 10) + 's';
+        container.appendChild(p);
+      }
+    })();
+
+    // Tabs
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.form-panel');
+    
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        panels.forEach(p => p.classList.remove('active'));
+        document.getElementById(target + 'Panel').classList.add('active');
+      });
+    });
+
+    // Toast
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.classList.add('show');
+      if (isError) toast.classList.add('error');
+      else toast.classList.remove('error');
+      setTimeout(() => {
+        toast.classList.remove('show');
+        toast.classList.remove('error');
+      }, 3000);
+    }
+
+    // Loading state
+    function setLoading(btn, isLoading) {
+      if (isLoading) {
+        btn.dataset.originalText = btn.textContent;
+        btn.innerHTML = '<span class="spinner"></span> Cargando...';
+        btn.disabled = true;
+      } else {
+        btn.textContent = btn.dataset.originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // Login con Email
+    async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtn');
+  
+  setLoading(btn, true);
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    
+    if (userDoc.exists()) {
+      const data = userDoc.data();
+      if (!data.plan) window.location.href = 'planes.html';
+      else if (!data.profile?.name) window.location.href = 'crear-perfil.html';
+      else window.location.href = 'index.html';
+    } else {
+      await setDoc(doc(db, 'users', user.uid), {
+        name: user.displayName || 'StreamifyUser',
+        email: user.email,
+        plan: null,
+        profile: null,
+        setupComplete: false,
+        createdAt: new Date().toISOString()
+      });
+      window.location.href = 'planes.html';
+    }
+    showToast('✅ ¡Bienvenido de vuelta!');
+  } catch (error) {
+    showToast('❌ ' + getErrorMessage(error.code), true);
+    setLoading(btn, false);
+  }
+}
+
+    // Registro con Email
+    async function handleRegister(e) {
+  e.preventDefault();
+  const name = document.getElementById('registerName').value;
+  const email = document.getElementById('registerEmail').value;
+  const password = document.getElementById('registerPassword').value;
+  const btn = document.getElementById('registerBtn');
+  
+  setLoading(btn, true);
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    await setDoc(doc(db, 'users', user.uid), {
+      name: name,
+      email: email,
+      plan: null,
+      profile: null,
+      setupComplete: false,
+      createdAt: new Date().toISOString()
+    });
+    
+    localStorage.setItem('userName', name);
+    showToast('🎉 ¡Cuenta creada! Elige tu plan.');
+    setTimeout(() => window.location.href = 'planes.html', 1000);
+  } catch (error) {
+    showToast('❌ ' + getErrorMessage(error.code), true);
+    setLoading(btn, false);
+  }
+}
+
+    // Social Sign In
+    async function signInWithGoogle() {
+  try {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, 'users', user.uid), {
+        name: user.displayName || 'StreamifyUser',
+        email: user.email,
+        plan: null,
+        profile: null,
+        setupComplete: false,
+        createdAt: new Date().toISOString()
+      });
+      showToast('🎉 ¡Cuenta creada! Elige tu plan.');
+      setTimeout(() => window.location.href = 'planes.html', 1000);
+    } else {
+      const data = userDoc.data();
+      if (!data.plan) window.location.href = 'planes.html';
+      else if (!data.profile?.name) window.location.href = 'crear-perfil.html';
+      else window.location.href = 'index.html';
+    }
+  } catch (error) {
+    showToast('❌ Error con Google', true);
+  }
+}
+
+    async function signInWithFacebook() {
+  try {
+    const provider = new FacebookAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, 'users', user.uid), {
+        name: user.displayName || 'StreamifyUser',
+        email: user.email,
+        plan: null,
+        profile: null,
+        setupComplete: false,
+        createdAt: new Date().toISOString()
+      });
+      showToast('🎉 ¡Cuenta creada! Elige tu plan.');
+      setTimeout(() => window.location.href = 'planes.html', 1000);
+    } else {
+      const data = userDoc.data();
+      if (!data.plan) window.location.href = 'planes.html';
+      else if (!data.profile?.name) window.location.href = 'crear-perfil.html';
+      else window.location.href = 'index.html';
+    }
+  } catch (error) {
+    showToast('❌ Error con Facebook', true);
+  }
+}
+
+    async function signInWithApple() {
+  try {
+    const provider = new OAuthProvider('apple.com');
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, 'users', user.uid), {
+        name: user.displayName || 'StreamifyUser',
+        email: user.email,
+        plan: null,
+        profile: null,
+        setupComplete: false,
+        createdAt: new Date().toISOString()
+      });
+      showToast('🎉 ¡Cuenta creada! Elige tu plan.');
+      setTimeout(() => window.location.href = 'planes.html', 1000);
+    } else {
+      const data = userDoc.data();
+      if (!data.plan) window.location.href = 'planes.html';
+      else if (!data.profile?.name) window.location.href = 'crear-perfil.html';
+      else window.location.href = 'index.html';
+    }
+  } catch (error) {
+    showToast('❌ Error con Apple', true);
+  }
+}
+
+    async function signInWithTwitter() {
+  try {
+    const provider = new TwitterAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, 'users', user.uid), {
+        name: user.displayName || 'StreamifyUser',
+        email: user.email,
+        plan: null,
+        profile: null,
+        setupComplete: false,
+        createdAt: new Date().toISOString()
+      });
+      showToast('🎉 ¡Cuenta creada! Elige tu plan.');
+      setTimeout(() => window.location.href = 'planes.html', 1000);
+    } else {
+      const data = userDoc.data();
+      if (!data.plan) window.location.href = 'planes.html';
+      else if (!data.profile?.name) window.location.href = 'crear-perfil.html';
+      else window.location.href = 'index.html';
+    }
+  } catch (error) {
+    showToast('❌ Error con X', true);
+  }
+}
+
+    async function signInWithGithub() {
+  try {
+    const provider = new GithubAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, 'users', user.uid), {
+        name: user.displayName || 'StreamifyUser',
+        email: user.email,
+        plan: null,
+        profile: null,
+        setupComplete: false,
+        createdAt: new Date().toISOString()
+      });
+      showToast('🎉 ¡Cuenta creada! Elige tu plan.');
+      setTimeout(() => window.location.href = 'planes.html', 1000);
+    } else {
+      const data = userDoc.data();
+      if (!data.plan) window.location.href = 'planes.html';
+      else if (!data.profile?.name) window.location.href = 'crear-perfil.html';
+      else window.location.href = 'index.html';
+    }
+  } catch (error) {
+    showToast('❌ Error con GitHub', true);
+  }
+}
+
+    async function signInWithMicrosoft() {
+  try {
+    const provider = new OAuthProvider('microsoft.com');
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, 'users', user.uid), {
+        name: user.displayName || 'StreamifyUser',
+        email: user.email,
+        plan: null,
+        profile: null,
+        setupComplete: false,
+        createdAt: new Date().toISOString()
+      });
+      showToast('🎉 ¡Cuenta creada! Elige tu plan.');
+      setTimeout(() => window.location.href = 'planes.html', 1000);
+    } else {
+      const data = userDoc.data();
+      if (!data.plan) window.location.href = 'planes.html';
+      else if (!data.profile?.name) window.location.href = 'crear-perfil.html';
+      else window.location.href = 'index.html';
+    }
+  } catch (error) {
+    showToast('❌ Error con Microsoft', true);
+  }
+}
+
+    function showForgotPassword() {
+      const email = document.getElementById('loginEmail').value;
+      if (!email) {
+        showToast('❌ Ingresa tu correo primero', true);
+        return;
+      }
+      sendPasswordResetEmail(auth, email)
+        .then(() => showToast('📧 Revisa tu correo para restablecer'))
+        .catch(() => showToast('❌ Error al enviar', true));
+    }
+
+    function getErrorMessage(code) {
+      const messages = {
+        'auth/invalid-email': 'Correo inválido',
+        'auth/user-disabled': 'Usuario deshabilitado',
+        'auth/user-not-found': 'Usuario no encontrado',
+        'auth/wrong-password': 'Contraseña incorrecta',
+        'auth/email-already-in-use': 'El correo ya está registrado',
+        'auth/weak-password': 'La contraseña debe tener al menos 6 caracteres',
+        'auth/popup-closed-by-user': 'Ventana cerrada'
+      };
+      return messages[code] || 'Error desconocido';
+    }
+
+    // Exponer funciones globalmente
+    window.handleLogin = handleLogin;
+    window.handleRegister = handleRegister;
+    window.signInWithGoogle = signInWithGoogle;
+    window.signInWithFacebook = signInWithFacebook;
+    window.signInWithApple = signInWithApple;
+    window.signInWithTwitter = signInWithTwitter;
+    window.signInWithGithub = signInWithGithub;
+    window.signInWithMicrosoft = signInWithMicrosoft;
+    window.showForgotPassword = showForgotPassword;
+  </script>
+</body>
+</html>
