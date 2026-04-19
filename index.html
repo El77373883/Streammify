@@ -396,6 +396,63 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   cursor: pointer;
 }
 
+
+/* ANIMACIONES PERFIL */
+.profile-modal {
+  transition: right 0.4s cubic-bezier(.32,.72,0,1);
+}
+
+.profile-section {
+  animation: slideUp 0.4s ease forwards;
+  opacity: 0;
+}
+
+.profile-section:nth-child(1) { animation-delay: 0.05s; }
+.profile-section:nth-child(2) { animation-delay: 0.1s; }
+.profile-section:nth-child(3) { animation-delay: 0.15s; }
+.profile-section:nth-child(4) { animation-delay: 0.2s; }
+.profile-section:nth-child(5) { animation-delay: 0.25s; }
+.profile-section:nth-child(6) { animation-delay: 0.3s; }
+.profile-section:nth-child(7) { animation-delay: 0.35s; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.profile-header {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.setting-item {
+  transition: background 0.2s, transform 0.15s;
+  cursor: pointer;
+}
+
+.setting-item:active {
+  background: var(--d4);
+  transform: scale(0.98);
+}
+
+.profile-avatar-large {
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+
+.profile-avatar-large:active {
+  transform: scale(1.1);
+}
+
+/* Stats cards animadas */
+#statSongs, #statMinutes {
+  transition: all 0.5s cubic-bezier(.34,1.56,.64,1);
+}
+
+
 </style>
 </head>
 <body>
@@ -417,7 +474,7 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   </div>
 
   <div class="profile-section">
-    <h4>📊 TUS ESTADÍSTICAS</h4>
+<h4 style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6" stroke="var(--g)" stroke-width="2" stroke-linecap="round"/></svg> TUS ESTADÍSTICAS</h4>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
       <div style="background:var(--d3);padding:14px;border-radius:12px;text-align:center;">
         <div style="font-size:22px;font-weight:800;color:var(--g);" id="statSongs">0</div>
@@ -439,7 +496,7 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   </div>
 
   <div class="profile-section">
-    <h4>💾 DESCARGAS DEL MES</h4>
+<h4 style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 21h18" stroke="var(--g)" stroke-width="2" stroke-linecap="round"/></svg> DESCARGAS DEL MES</h4>
     <div class="download-counter">
       <span id="downloadCountText">0/10</span>
       <span id="downloadResetText">Reinicia en 15 días</span>
@@ -450,7 +507,7 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   </div>
 
   <div class="profile-section">
-    <h4>👤 CUENTA</h4>
+<h4 style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="var(--g)" stroke-width="2"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="var(--g)" stroke-width="2" stroke-linecap="round"/></svg> CUENTA</h4>
     <div style="background:var(--d3);border-radius:12px;overflow:hidden;">
       <div class="setting-item" style="padding:14px 16px;" onclick="toast('Cambiar foto próximamente')">
         <span class="setting-label">📸 Cambiar foto de perfil</span>
@@ -468,7 +525,7 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   </div>
 
   <div class="profile-section">
-    <h4>⚙️ PREFERENCIAS</h4>
+<h4 style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke="var(--g)" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" stroke="var(--g)" stroke-width="2"/></svg> PREFERENCIAS</h4>
     <div style="background:var(--d3);border-radius:12px;overflow:hidden;">
       <div class="setting-item" style="padding:14px 16px;">
         <span class="setting-label">🌙 Tema oscuro</span>
@@ -493,7 +550,7 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   </div>
 
   <div class="profile-section">
-    <h4>🎵 MI MÚSICA</h4>
+ <h4 style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13" stroke="var(--g)" stroke-width="2" stroke-linecap="round"/><circle cx="6" cy="18" r="3" stroke="var(--g)" stroke-width="2"/><circle cx="18" cy="16" r="3" stroke="var(--g)" stroke-width="2"/></svg> MI MÚSICA</h4>
     <div style="background:var(--d3);border-radius:12px;overflow:hidden;">
       <div class="setting-item" style="padding:14px 16px;" onclick="closeProfile();goPage('library')">
         <span class="setting-label">🕐 Historial</span>
@@ -507,7 +564,7 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
   </div>
 
   <div class="profile-section">
-    <h4>🛠️ SOPORTE</h4>
+<h4 style="display:flex;align-items:center;gap:8px;"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="var(--g)" stroke-width="2"/><path d="M12 16v-4M12 8h.01" stroke="var(--g)" stroke-width="2" stroke-linecap="round"/></svg> SOPORTE</h4>
     <div style="background:var(--d3);border-radius:12px;overflow:hidden;">
       <div class="setting-item" style="padding:14px 16px;" onclick="reportarProblema()">
         <span class="setting-label">🐛 Reportar problema</span>
