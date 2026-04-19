@@ -63,8 +63,8 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
 #pages{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(148px + var(--nh) + var(--sb));-webkit-overflow-scrolling:touch}
 #pages::-webkit-scrollbar{display:none}
 .page{display:none}.page.active{display:block}
-.htop{padding:calc(var(--st)+48px) 16px 12px 72px;background:linear-gradient(180deg,#1c2d1c,var(--d))}
-.greet{font-size:23px;font-weight:800;margin-bottom:14px}
+.htop{padding:calc(var(--st)+16px) 16px 12px;background:linear-gradient(180deg,#1c2d1c,var(--d));display:flex;align-items:center;justify-content:space-between;}
+.greet{font-size:23px;font-weight:800;}
 .qgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 24px}
 .qi{background:var(--d3);border-radius:6px;display:flex;align-items:center;overflow:hidden;height:56px;cursor:pointer;transition:background .15s}
 .qi:active{background:var(--d4)}
@@ -254,31 +254,21 @@ html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMac
 
 /* PERFIL Y CONFIGURACIÓN */
 .user-profile-btn {
-  position: fixed;
-  top: calc(var(--st) + 10px);
-  left: 16px;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   background: var(--d3);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 501;
   border: 2px solid var(--d4);
   overflow: hidden;
+  flex-shrink: 0;
 }
-.user-profile-btn img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.user-profile-btn svg {
-  width: 22px;
-  height: 22px;
-  fill: var(--w);
-}
+.user-profile-btn img{width:100%;height:100%;object-fit:cover;}
+.user-profile-btn svg{width:20px;height:20px;fill:var(--w);}
+
 .profile-modal {
   position: fixed;
   top: 0;
