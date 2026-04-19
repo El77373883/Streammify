@@ -1294,7 +1294,6 @@ const row=document.createElement('div');row.className='titem';row.id='titem_'+ti
     const dur=document.createElement('div');dur.className='tdur';dur.textContent=fmt(t.duration || 150+Math.random()*90);
 const bars=document.createElement('div');bars.className='playing-bars';bars.id='bars_'+ti;bars.innerHTML='<span></span><span></span><span></span>';bars.style.display=(curIdx===ti&&playing)?'flex':'none';
 row.append(num,thumb,inf,dur,bars);
-
   });
   const dg=document.getElementById('discGrid');dg.innerHTML='';
   curArtist.tids.forEach(ti=>{
