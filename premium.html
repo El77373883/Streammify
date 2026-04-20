@@ -1378,10 +1378,9 @@ if(topSorted.length){
     if(t)topRow.appendChild(mkCard(t,t.artist,false,()=>playTrack(T.indexOf(t))));
   });
 }else{
-  T.slice(0,8).forEach(t=>topRow.appendChild(mkCard(t,t.artist,false,()=>playTrack(T.indexOf(t)))));
+    T.slice(0,8).forEach(t=>topRow.appendChild(mkCard(t,t.artist,false,()=>playTrack(T.indexOf(t)))));
 }
-
-
+}
 
 function renderGenres(){
   const genres=[
@@ -1976,30 +1975,6 @@ async function doLogout() {
   }
 }
 
-
-// Modificar función guardarParaOffline para límite mensual
-const originalGuardar = guardarParaOffline;
-guardarParaOffline = async function(track) {
-  const user = window.auth?.currentUser;
-  if (user) {
-    const plan = currentUserData?.plan || 'free';
-    if (plan === 'free' && monthlyDownloads >= 10) {
-      toast('❌ Límite mensual de 5 descargas alcanzado');
-      openProfile();
-      return;
-    }
-  }
-  
-  await originalGuardar(track);
-  
-  if (user && (currentUserData?.plan || 'free') === 'free') {
-    monthlyDownloads++;
-    await updateDoc(doc(window.db, 'users', user.uid), {
-      monthlyDownloads: monthlyDownloads
-    });
-    updateDownloadDisplay();
-  }
-};
 
 // Cargar tema guardado
 if (localStorage.getItem('theme') === 'light') {
