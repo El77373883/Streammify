@@ -1661,7 +1661,9 @@ if (!title || !url) {
         return;
       }
       
-const artistName = artist ? document.getElementById('songArtist').options[document.getElementById('songArtist').selectedIndex].text : 'Desconocido';
+const baseArtist = artist ? document.getElementById('songArtist').options[document.getElementById('songArtist').selectedIndex].text : (document.getElementById('songTitle').value.trim() ? 'Desconocido' : '');
+const collabNames = collabs.map(c => c.name).join(', ');
+const artistName = collabNames ? `${baseArtist} ft. ${collabNames}` : baseArtist;
 
 const songData = {
   title,
