@@ -2215,7 +2215,7 @@ const songData = {
     async function deleteItem(collectionName, id) {
       modalCallback = async () => {
         try {
-          await deleteDoc(doc(db, collectionName, id));
+await window.deleteDoc(window.doc(db, collectionName, id));
           showToast('✅ Eliminado correctamente');
           await loadAllData();
         } catch (e) {
