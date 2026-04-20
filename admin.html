@@ -822,6 +822,23 @@
         grid-template-columns: 1fr;
       }
     }
+    
+    .genre-chip {
+  background: var(--d3);
+  color: var(--gr);
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.genre-chip.active {
+  background: var(--g);
+  color: black;
+}
+
+    
   </style>
 </head>
 <body>
@@ -954,26 +971,32 @@
         
         <div class="form-group">
           <label class="form-label">Género *</label>
-          <select class="form-select" id="songGenre">
-  <option value="Pop">🎤 Pop</option>
-  <option value="Rap">🎧 Rap</option>
-  <option value="Trap">🔥 Trap</option>
-  <option value="Reggaetón">💃 Reggaetón</option>
-  <option value="Electrónica">🎛️ Electrónica</option>
-  <option value="R&B">🎵 R&B</option>
-  <option value="Rock">🎸 Rock</option>
-  <option value="Latino">🌴 Latino</option>
-  <option value="Indie">🌿 Indie</option>
-  <option value="Hip-Hop">🎙️ Hip-Hop</option>
-  <option value="Corridos">🤠 Corridos</option>
-  <option value="Corridos Tumbados">🎸 Corridos Tumbados</option>
-  <option value="Phonk">💀 Phonk</option>
-  <option value="Debow">🥁 Debow</option>
-  <option value="Salsa">🎺 Salsa</option>
-  <option value="Bachata">🌹 Bachata</option>
-  <option value="Cumbia">🪗 Cumbia</option>
-          </select>
+          <input type="hidden" id="songGenre" value="Pop">
+          <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;" id="genreChips">
+            <div class="genre-chip active" onclick="selectGenre(this,'Pop')">🎤 Pop</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Rap')">🎧 Rap</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Trap')">🔥 Trap</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Reggaetón')">💃 Reggaetón</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Electrónica')">🎛️ Electrónica</div>
+            <div class="genre-chip" onclick="selectGenre(this,'R&B')">🎵 R&B</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Rock')">🎸 Rock</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Latino')">🌴 Latino</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Indie')">🌿 Indie</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Hip-Hop')">🎙️ Hip-Hop</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Corridos')">🤠 Corridos</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Corridos Tumbados')">🎸 Corridos Tumbados</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Phonk')">💀 Phonk</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Debow')">🥁 Debow</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Salsa')">🎺 Salsa</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Bachata')">🌹 Bachata</div>
+            <div class="genre-chip" onclick="selectGenre(this,'Cumbia')">🪗 Cumbia</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <input type="text" class="form-input" id="newGenreInput" placeholder="Crear género nuevo..." style="flex:1;">
+            <button class="submit-btn secondary" style="width:auto;padding:10px 14px;margin:0;" onclick="addNewGenre()">+ Agregar</button>
+          </div>
         </div>
+
         
         <div class="form-group">
           <label class="form-label">URL del MP3 (Archive.org u otro) *</label>
@@ -2402,6 +2425,28 @@ function editBanner(id) {
   tag.innerHTML = `${name} <span onclick="this.parentNode.remove()" style="cursor:pointer;font-size:16px;">×</span>`;
   document.getElementById('collabList').appendChild(tag);
   sel.value = '';
+}
+
+
+function selectGenre(el, value) {
+  document.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('songGenre').value = value;
+}
+
+function addNewGenre() {
+  const input = document.getElementById('newGenreInput');
+  const val = input.value.trim();
+  if (!val) return;
+  const chip = document.createElement('div');
+  chip.className = 'genre-chip active';
+  chip.textContent = val;
+  chip.onclick = function() { selectGenre(this, val); };
+  document.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById('genreChips').appendChild(chip);
+  document.getElementById('songGenre').value = val;
+  input.value = '';
+  showToast('✅ Género "' + val + '" agregado');
 }
 
     
