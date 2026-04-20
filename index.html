@@ -1691,7 +1691,7 @@ const ADS = [
 ];
 
 function showAd() {
-  if(currentUserData?.plan === 'premium') return;
+  if((currentUserData?.plan || 'free') === 'premium') return;
   const existing = document.getElementById('adBanner');
   if(existing) existing.remove();
   
@@ -1759,13 +1759,15 @@ window.toggleShuffle = function() {
 const originalPlayTrack = playTrack;
 window.playTrack = function(idx) {
   originalPlayTrack(idx);
-  if(currentUserData?.plan !== 'premium') {
+  const plan = currentUserData?.plan || 'free';
+  if(plan !== 'premium') {
     songCount++;
     if(songCount % 3 === 0) {
       setTimeout(() => showAd(), 2000);
     }
   }
 };
+
 
 
 </script>
