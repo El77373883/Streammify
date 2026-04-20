@@ -1768,7 +1768,7 @@ window.nextTrack = function() {
       skipCount = 0;
       skipResetTime = Date.now();
     }
-    if(skipCount >= 5) {
+    if(skipCount >= 15) {
       showPremiumPopup('El plan Free tiene 5 saltos por hora. Hazte Premium para saltos ilimitados 🎵');
       return;
     }
