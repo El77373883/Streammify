@@ -1624,6 +1624,7 @@ function initEQ() {
   if (audioCtx) return;
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
     sourceNode = audioCtx.createMediaElementSource(aud);
     let lastNode = sourceNode;
     EQ_FREQS.forEach((freq, i) => {
@@ -1698,7 +1699,11 @@ function setSpeed(speed) {
 }
 
 // Iniciar EQ al primer play
-aud.addEventListener('play', () => { if(!audioCtx) initEQ(); }, {once: true});
+aud.addEventListener('play', () => {
+  if(!audioCtx) initEQ();
+  if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+});
+
 
 
 // ===== DJ IA =====
