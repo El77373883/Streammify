@@ -1525,13 +1525,7 @@ window.guardarParaOffline = guardarParaOffline;
   // Iniciar espera
   waitForFirebase();
   
-  // Actualizar al volver a la página
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && window.firebaseReady) {
-      console.log('🔄 Página visible, actualizando...');
-      loadFirestoreSongs();
-    }
-  });
+
 })();
 
 
