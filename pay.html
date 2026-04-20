@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0A0A0A">
+  <title>Streamify Premium · Métodos de Pago</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --g: #1ed760;
+      --g-dark: #1db954;
+      --bk: #000000;
+      --d: #0a0a0a;
+      --d2: #121212;
+      --d3: #1a1a1a;
+      --d4: #282828;
+      --d5: #333333;
+      --w: #ffffff;
+      --gr: #a7a7a7;
+      --gr2: #727272;
+      --premium: linear-gradient(135deg, #1db954 0%, #1ed760 50%, #4a9eff 100%);
+      --premium-gold: linear-gradient(135deg, #FEE140 0%, #FA709A 100%);
+      --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      --glow: 0 0 40px rgba(29, 185, 84, 0.15);
+    }
+
+    body {
+      background: var(--bk);
+      color: var(--w);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      position: fixed;
+      width: 100%;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Fondo premium */
+    .bg-gradient {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 20% 30%, rgba(29, 185, 84, 0.06) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 70%, rgba(74, 158, 255, 0.04) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 480px;
+      width: 100%;
+      height: 100vh;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--d);
+    }
+
+    /* Header */
+    .header {
+      padding: 20px 20px 16px;
+      background: linear-gradient(180deg, var(--d2) 0%, transparent 100%);
+      position: relative;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .back-btn {
+      width: 40px;
+      height: 40px;
+      background: var(--d3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid var(--d4);
+    }
+
+    .back-btn:hover {
+      background: var(--d4);
+      transform: scale(0.95);
+    }
+
+    .back-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: var(--w);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--premium);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: #000;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 800;
+      background: var(--premium);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .premium-badge {
+      background: var(--premium-gold);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .premium-badge svg {
+      width: 12px;
+      height: 12px;
+      fill: #000;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .subtitle {
+      color: var(--gr);
+      font-size: 14px;
+    }
+
+    /* Contenido scrollable */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 20px 20px;
+    }
+
+    .content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .content::-webkit-scrollbar-thumb {
+      background: var(--d4);
+      border-radius: 20px;
+    }
+
+    /* Secciones */
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-title span {
+      color: var(--g);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* Plan actual */
+    .current-plan-card {
+      background: linear-gradient(135deg, var(--d3) 0%, var(--d4) 100%);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 24px;
+      border: 1px solid var(--d5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .current-plan-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(29, 185, 84, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .plan-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .plan-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--premium);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .plan-icon svg {
+      width: 26px;
+      height: 26px;
+      fill: #000;
+    }
+
+    .plan-info h3 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .plan-info p {
+      color: var(--gr);
+      font-size: 13px;
+    }
+
+    .plan-price {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .plan-price small {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--gr);
+    }
+
+    .billing-cycle {
+      color: var(--gr);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .change-plan-btn {
+      background: transparent;
+      border: 1px solid var(--d5);
+      color: var(--w);
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: fit-content;
+    }
+
+    .change-plan-btn:hover {
+      background: var(--d4);
+    }
+
+    /* Métodos de pago */
+    .payment-methods {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .payment-card {
+      background: var(--d3);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+
+    .payment-card:hover {
+      background: var(--d4);
+    }
+
+    .payment-card.selected {
+      border-color: var(--g);
+      background: rgba(29, 185, 84, 0.1);
+    }
+
+    .payment-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--d4);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .payment-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .payment-info {
+      flex: 1;
+    }
+
+    .payment-name {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+
+    .payment-desc {
+      font-size: 12px;
+      color: var(--gr);
+    }
+
+    .payment-check {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid var(--d5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .payment-card.selected .payment-check {
+      background: var(--g);
+      border-color: var(--g);
+    }
+
+    .payment-check svg {
+      width: 14px;
+      height: 14px;
+      fill: #000;
+      display: none;
+    }
+
+    .payment-card.selected .payment-check svg {
+      display: block;
+    }
+
+    /* Tarjetas guardadas */
+    .saved-cards {
+      margin-top: 16px;
+    }
+
+    .saved-card {
+      background: var(--d3);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 10px;
+      border: 1px solid var(--d4);
+    }
+
+    .card-brand {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-brand svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .card-details {
+      flex: 1;
+    }
+
+    .card-number {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-expiry {
+      font-size: 12px;
+      color: var(--gr);
+    }
+
+    .card-default {
+      background: var(--g);
+      color: #000;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* Agregar tarjeta */
+    .add-card-btn {
+      background: transparent;
+      border: 2px dashed var(--d5);
+      border-radius: 16px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--gr);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 10px;
+    }
+
+    .add-card-btn:hover {
+      border-color: var(--g);
+      color: var(--g);
+      background: rgba(29, 185, 84, 0.05);
+    }
+
+    .add-card-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* Tarjetas de regalo */
+    .gift-section {
+      background: linear-gradient(135deg, #2a1b3d 0%, #1a1a2e 100%);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .gift-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .gift-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--premium-gold);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gift-icon svg {
+      width: 32px;
+      height: 32px;
+      fill: #000;
+    }
+
+    .gift-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .gift-subtitle {
+      font-size: 13px;
+      color: var(--gr);
+    }
+
+    .gift-input-wrapper {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .gift-input {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1.5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      padding: 14px 16px;
+      color: var(--w);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .gift-input:focus {
+      border-color: var(--g);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .gift-input::placeholder {
+      color: var(--gr2);
+      text-transform: none;
+      letter-spacing: normal;
+    }
+
+    .redeem-btn {
+      background: var(--premium-gold);
+      border: none;
+      border-radius: 14px;
+      padding: 0 20px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #000;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .redeem-btn:hover {
+      transform: scale(0.95);
+    }
+
+    .gift-balance {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .balance-label {
+      color: var(--gr);
+      font-size: 13px;
+    }
+
+    .balance-amount {
+      font-size: 20px;
+      font-weight: 700;
+      color: #FEE140;
+    }
+
+    /* Botón de pago */
+    .pay-btn {
+      width: 100%;
+      background: var(--g);
+      border: none;
+      border-radius: 18px;
+      padding: 18px;
+      color: #000;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin: 24px 0 32px;
+      box-shadow: 0 8px 24px rgba(29, 185, 84, 0.3);
+    }
+
+    .pay-btn:hover {
+      transform: scale(0.98);
+      background: var(--g-dark);
+    }
+
+    .pay-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Seguridad */
+    .security-badges {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--d3);
+      border-radius: 16px;
+    }
+
+    .security-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--gr);
+    }
+
+    .security-item svg {
+      width: 16px;
+      height: 16px;
+      fill: var(--g);
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      backdrop-filter: blur(20px);
+      z-index: 1000;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal {
+      background: var(--d2);
+      border-radius: 32px 32px 0 0;
+      padding: 32px 24px;
+      max-width: 480px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+      border: 1px solid var(--d4);
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--d5);
+      border-radius: 4px;
+      margin: 0 auto 20px;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--gr);
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--d3);
+      border: 1.5px solid transparent;
+      border-radius: 14px;
+      padding: 16px;
+      color: var(--w);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--g);
+      background: var(--d4);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .form-row .form-group {
+      flex: 1;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .modal-btn {
+      flex: 1;
+      padding: 16px;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-btn.primary {
+      background: var(--g);
+      border: none;
+      color: #000;
+    }
+
+    .modal-btn.secondary {
+      background: transparent;
+      border: 1px solid var(--d5);
+      color: var(--w);
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--d2);
+      color: var(--w);
+      padding: 16px 32px;
+      border-radius: 60px;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 1001;
+      border: 1px solid var(--d4);
+      box-shadow: var(--card-shadow);
+      backdrop-filter: blur(10px);
+      white-space: nowrap;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #toast.success {
+      border-color: var(--g);
+    }
+
+    #toast.error {
+      border-color: #e91429;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-gradient"></div>
+
+<div class="container">
+  <div class="header">
+    <div class="header-top">
+      <div class="back-btn" onclick="goBack()">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+        </svg>
+      </div>
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+          </svg>
+        </div>
+        <span class="logo-text">Streamify</span>
+      </div>
+      <div class="premium-badge">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 2L15 9H22L16 14L19 21L12 16.5L5 21L8 14L2 9H9L12 2Z"/>
+        </svg>
+        PREMIUM
+      </div>
+    </div>
+    <h1>Método de pago</h1>
+    <div class="subtitle">Elige cómo quieres pagar tu suscripción</div>
+  </div>
+
+  <div class="content">
+    <!-- Plan actual -->
+    <div class="current-plan-card">
+      <div class="plan-header">
+        <div class="plan-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
+          </svg>
+        </div>
+        <div class="plan-info">
+          <h3>Streamify Premium</h3>
+          <p>Individual · 1 cuenta</p>
+        </div>
+      </div>
+      <div class="plan-price">$129<span>/mes</span></div>
+      <div class="billing-cycle">Próximo cobro: 18 may 2024</div>
+      <button class="change-plan-btn" onclick="showPlans()">Cambiar plan</button>
+    </div>
+
+    <!-- Tarjetas guardadas -->
+    <div class="section">
+      <div class="section-title">
+        Tus tarjetas
+        <span onclick="showAddCard()">+ Agregar</span>
+      </div>
+      <div class="saved-cards">
+        <div class="saved-card" onclick="selectSavedCard(this)">
+          <div class="card-brand">
+            <svg viewBox="0 0 24 24" fill="#fff">
+              <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
+            </svg>
+          </div>
+          <div class="card-details">
+            <div class="card-number">•••• 4242</div>
+            <div class="card-expiry">Vence 12/26</div>
+          </div>
+          <div class="card-default">Predeterminada</div>
+        </div>
+        <div class="saved-card" onclick="selectSavedCard(this)">
+          <div class="card-brand">
+            <svg viewBox="0 0 24 24" fill="#fff">
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+          </div>
+          <div class="card-details">
+            <div class="card-number">•••• 8888</div>
+            <div class="card-expiry">Vence 08/25</div>
+          </div>
+        </div>
+      </div>
+      <button class="add-card-btn" onclick="showAddCard()">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+        </svg>
+        Agregar nueva tarjeta
+      </button>
+    </div>
+
+    <!-- Métodos de pago alternativos -->
+    <div class="section">
+      <div class="section-title">Otros métodos</div>
+      <div class="payment-methods">
+        <div class="payment-card" onclick="selectPayment(this, 'paypal')">
+          <div class="payment-icon">
+            <svg viewBox="0 0 24 24" fill="#009CDE">
+              <path d="M7.5 6.5C7.5 4 9.5 2 12 2s4.5 2 4.5 4.5-2 4.5-4.5 4.5-4.5-2-4.5-4.5zm9 0c0-2.5-2-4.5-4.5-4.5S7.5 4 7.5 6.5 9.5 11 12 11s4.5-2 4.5-4.5zM4 20c0-4 3.5-7 8-7s8 3 8 7v1H4v-1z"/>
+            </svg>
+          </div>
+          <div class="payment-info">
+            <div class="payment-name">PayPal</div>
+            <div class="payment-desc">Paga con tu cuenta PayPal</div>
+          </div>
+          <div class="payment-check">
+            <svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="payment-card" onclick="selectPayment(this, 'apple')">
+          <div class="payment-icon">
+            <svg viewBox="0 0 24 24" fill="#fff">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+            </svg>
+          </div>
+          <div class="payment-info">
+            <div class="payment-name">Apple Pay</div>
+            <div class="payment-desc">Pago rápido y seguro</div>
+          </div>
+          <div class="payment-check">
+            <svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="payment-card" onclick="selectPayment(this, 'google')">
+          <div class="payment-icon">
+            <svg viewBox="0 0 24 24" fill="#4285F4">
+              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+              <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+            </svg>
+          </div>
+          <div class="payment-info">
+            <div class="payment-name">Google Pay</div>
+            <div class="payment-desc">Vincula tu cuenta Google</div>
+          </div>
+          <div class="payment-check">
+            <svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="payment-card" onclick="selectPayment(this, 'oxxo')">
+          <div class="payment-icon">
+            <svg viewBox="0 0 24 24" fill="#E31837">
+              <rect x="3" y="8" width="18" height="10" rx="1"/>
+              <line x1="7" y1="12" x2="17" y2="12"/>
+            </svg>
+          </div>
+          <div class="payment-info">
+            <div class="payment-name">OXXO</div>
+            <div class="payment-desc">Paga en efectivo en tiendas</div>
+          </div>
+          <div class="payment-check">
+            <svg viewBox="0 0 24 24">
+              <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjetas de regalo -->
+    <div class="gift-section">
+      <div class="gift-header">
+        <div class="gift-icon">
+          <svg viewBox="0 0 24 24">
+            <path d="M20 6h-2.18c.11-.31.18-.65.18-1 0-1.66-1.34-3-3-3-1.05 0-1.96.54-2.5 1.35l-.5.67-.5-.68C10.96 2.54 10.05 2 9 2 7.34 2 6 3.34 6 5c0 .35.07.69.18 1H4c-1.11 0-1.99.89-1.99 2L2 19c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2zm-5-2c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zM9 4c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm11 15H4v-2h16v2zm0-5H4V8h5.08L7 10.83 8.62 12 11 8.76l1-1.36 1 1.36L15.38 12 17 10.83 14.92 8H20v6z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="gift-title">Tarjeta de regalo</div>
+          <div class="gift-subtitle">¿Tienes un código? Canjéalo aquí</div>
+        </div>
+      </div>
+
+      <div class="gift-input-wrapper">
+        <input type="text" class="gift-input" id="giftCode" placeholder="XXXX-XXXX-XXXX-XXXX" maxlength="19">
+        <button class="redeem-btn" onclick="redeemGiftCard()">Canjear</button>
+      </div>
+
+      <div class="gift-balance">
+        <span class="balance-label">Saldo disponible</span>
+        <span class="balance-amount" id="giftBalance">$0.00</span>
+      </div>
+    </div>
+
+    <!-- Seguridad -->
+    <div class="security-badges">
+      <div class="security-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/>
+        </svg>
+        SSL Seguro
+      </div>
+      <div class="security-item">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+        </svg>
+        Datos encriptados
+      </div>
+    </div>
+
+    <!-- Botón de pago -->
+    <button class="pay-btn" id="payBtn" onclick="processPayment()">
+      Pagar $129.00 MXN
+    </button>
+  </div>
+</div>
+
+<!-- Modal Agregar Tarjeta -->
+<div class="modal-overlay" id="addCardModal" onclick="closeAddCard()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Agregar tarjeta</div>
+    
+    <div class="form-group">
+      <label class="form-label">Número de tarjeta</label>
+      <input type="text" class="form-input" placeholder="0000 0000 0000 0000" maxlength="19">
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Nombre del titular</label>
+      <input type="text" class="form-input" placeholder="Como aparece en la tarjeta">
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Vencimiento</label>
+        <input type="text" class="form-input" placeholder="MM/AA" maxlength="5">
+      </div>
+      <div class="form-group">
+        <label class="form-label">CVV</label>
+        <input type="text" class="form-input" placeholder="123" maxlength="3">
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">Código postal</label>
+      <input type="text" class="form-input" placeholder="00000" maxlength="5">
+    </div>
+    
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="closeAddCard()">Cancelar</button>
+      <button class="modal-btn primary" onclick="saveCard()">Guardar tarjeta</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // Variables globales
+  let selectedPaymentMethod = 'card';
+  let giftBalance = 0;
+  let selectedCard = null;
+
+  // Navegación
+  function goBack() {
+    window.history.back();
+  }
+
+  // Seleccionar método de pago
+  function selectPayment(element, method) {
+    document.querySelectorAll('.payment-card').forEach(card => {
+      card.classList.remove('selected');
+    });
+    element.classList.add('selected');
+    selectedPaymentMethod = method;
+    
+    const methods = {
+      'paypal': 'PayPal',
+      'apple': 'Apple Pay',
+      'google': 'Google Pay',
+      'oxxo': 'OXXO'
+    };
+    
+    showToast(`✨ ${methods[method]} seleccionado`, false, true);
+  }
+
+  // Seleccionar tarjeta guardada
+  function selectSavedCard(element) {
+    document.querySelectorAll('.saved-card').forEach(card => {
+      card.style.borderColor = 'var(--d4)';
+    });
+    element.style.borderColor = 'var(--g)';
+    selectedCard = element;
+    selectedPaymentMethod = 'saved_card';
+  }
+
+  // Mostrar modal de agregar tarjeta
+  function showAddCard() {
+    document.getElementById('addCardModal').style.display = 'flex';
+  }
+
+  function closeAddCard() {
+    document.getElementById('addCardModal').style.display = 'none';
+  }
+
+  function saveCard() {
+    closeAddCard();
+    showToast('✅ Tarjeta agregada correctamente', false, true);
+    
+    // Agregar nueva tarjeta a la lista
+    const savedCards = document.querySelector('.saved-cards');
+    const newCard = document.createElement('div');
+    newCard.className = 'saved-card';
+    newCard.onclick = function() { selectSavedCard(this); };
+    newCard.innerHTML = `
+      <div class="card-brand">
+        <svg viewBox="0 0 24 24" fill="#fff">
+          <rect x="3" y="8" width="18" height="10" rx="1"/>
+        </svg>
+      </div>
+      <div class="card-details">
+        <div class="card-number">•••• 1234</div>
+        <div class="card-expiry">Vence 12/28</div>
+      </div>
+    `;
+    savedCards.appendChild(newCard);
+  }
+
+  // Canjear tarjeta de regalo
+  function redeemGiftCard() {
+    const code = document.getElementById('giftCode').value.trim();
+    
+    if (!code) {
+      showToast('❌ Ingresa un código válido', true);
+      return;
+    }
+    
+    if (code === 'PREMIUM2024' || code === 'STREAMIFY50') {
+      giftBalance += 50;
+      document.getElementById('giftBalance').textContent = `$${giftBalance}.00`;
+      document.getElementById('giftCode').value = '';
+      showToast('🎉 ¡$50.00 agregados a tu saldo!', false, true);
+    } else if (code.length >= 10) {
+      giftBalance += 100;
+      document.getElementById('giftBalance').textContent = `$${giftBalance}.00`;
+      document.getElementById('giftCode').value = '';
+      showToast('🎁 ¡$100.00 agregados a tu saldo!', false, true);
+    } else {
+      showToast('❌ Código inválido', true);
+    }
+  }
+
+  // Procesar pago
+  function processPayment() {
+    const btn = document.getElementById('payBtn');
+    const originalText = btn.textContent;
+    
+    btn.innerHTML = '<span style="opacity:0.7">Procesando...</span>';
+    btn.disabled = true;
+    
+    setTimeout(() => {
+      if (giftBalance >= 129) {
+        giftBalance -= 129;
+        document.getElementById('giftBalance').textContent = `$${giftBalance}.00`;
+        showToast('✅ ¡Pago realizado con saldo de regalo!', false, true);
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1500);
+      } else {
+        showToast('✅ ¡Pago exitoso! Bienvenido a Premium', false, true);
+        setTimeout(() => {
+          window.location.href = 'index.html';
+        }, 1500);
+      }
+      
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }, 2000);
+  }
+
+  // Mostrar planes
+  function showPlans() {
+    showToast('🔄 Cargando planes disponibles...', false, true);
+  }
+
+  // Toast
+  function showToast(msg, isError = false, isSuccess = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    t.classList.remove('error', 'success');
+    if (isError) t.classList.add('error');
+    if (isSuccess) t.classList.add('success');
+    setTimeout(() => t.classList.remove('show', 'error', 'success'), 3000);
+  }
+
+  // Formatear input de código de regalo
+  document.getElementById('giftCode')?.addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\s/g, '').toUpperCase();
+    if (value.length > 16) value = value.slice(0, 16);
+    
+    let formatted = '';
+    for (let i = 0; i < value.length; i++) {
+      if (i > 0 && i % 4 === 0) formatted += '-';
+      formatted += value[i];
+    }
+    e.target.value = formatted;
+  });
+
+  // Cerrar modal con Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAddCard();
+    }
+  });
+
+  // Cargar saldo guardado
+  const savedBalance = localStorage.getItem('giftBalance');
+  if (savedBalance) {
+    giftBalance = parseFloat(savedBalance);
+    document.getElementById('giftBalance').textContent = `$${giftBalance}.00`;
+  }
+
+  // Guardar saldo al salir
+  window.addEventListener('beforeunload', () => {
+    localStorage.setItem('giftBalance', giftBalance.toString());
+  });
+</script>
+
+</body>
+</html>
