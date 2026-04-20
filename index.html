@@ -1006,17 +1006,20 @@ const q = query(collection(window.db, 'songs'), orderBy('order', 'asc'));
     const snapshot = await getDocs(q);
     const firestoreSongs = snapshot.docs.map(doc => {
       const data = doc.data();
-      return {
+return {
         id: doc.id,
         title: data.title || 'Sin título',
         artist: data.artist || data.artistName || 'Desconocido',
         album: data.albumName || data.album || '',
+        genre: data.genre || 'Pop',
         pal: data.pal || Math.floor(Math.random() * PAL.length),
         src: data.url || '',
         coverUrl: data.coverUrl || null,
         lyrics: data.lyrics || '',
         duration: data.duration || 180,
-        featured: data.featured || false
+        featured: data.featured || false,
+        tags: data.tags || [],
+        collaborators: data.collaborators || []
       };
     });
     
