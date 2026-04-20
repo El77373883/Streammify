@@ -1505,15 +1505,19 @@ document.getElementById('mainContent').classList.add('visible');
       el.classList.toggle('active');
     }
     
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
-      
-      event.target.classList.add('active');
-      document.getElementById(tabId + 'Panel').classList.add('active');
-      
-      if (tabId === 'dashboard') updateDashboard();
-    }
+function switchTab(tabId) {
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(panel => panel.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(tabId + 'Panel').classList.add('active');
+  
+  // Resetear estado de edición al cambiar tab
+  currentEditId = null;
+  
+  if (tabId === 'dashboard') updateDashboard();
+}
+
     
     // Cloudinary Upload Widget
     function uploadImage(type) {
