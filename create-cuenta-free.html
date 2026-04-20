@@ -513,7 +513,7 @@ initAuth();
       localStorage.setItem('userAvatar', selectedAvatar);
       
       showToast('✅ ¡Perfil creado! Bienvenido');
-      setTimeout(() => window.location.href = 'gratis.html', 1000);
+      setTimeout(() => window.location.href = 'index.html', 1000);
     } catch (error) {
       showToast('Error al guardar', true);
       btn.innerHTML = 'Guardar y continuar';
