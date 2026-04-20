@@ -1319,7 +1319,7 @@ function doSearch(val){
   if(!val){res.style.display='none';gs.style.display='block';return;}
   gs.style.display='none';res.style.display='block';
   const found=[
-    ...T.map((t,i)=>({track:t, pal:t.pal, name:t.title, sub:'Canción · '+t.artist, circle:false, fn:()=>playTrack(i), match:t.title?.toLowerCase().includes(val)||t.artist?.toLowerCase().includes(val)||t.tags?.some(tag=>tag.includes(val))||t.collaborators?.some(c=>c.name?.toLowerCase().includes(val))
+...T.map((t,i)=>({track:t, pal:t.pal, name:t.title, sub:'Canción · '+t.artist, circle:false, fn:()=>playTrack(i), match:t.title?.toLowerCase().includes(val)||t.artist?.toLowerCase().includes(val)||t.tags?.some(tag=>tag.includes(val))||t.collaborators?.some(c=>c.name?.toLowerCase().includes(val))})),
     ...A.map((a,i)=>({pal:a.pal,name:a.name,sub:'Artista',circle:true,fn:()=>openArtist(i),match:a.name.toLowerCase().includes(val)})),
     ...PL.map((p,i)=>({pal:p.pal,name:p.name,sub:'Playlist',circle:false,fn:()=>openPL(i),match:p.name.toLowerCase().includes(val)})),
   ].filter(x=>x.match);
