@@ -1819,10 +1819,40 @@ window.playTrack = function(idx) {
   if(plan !== 'premium') {
     songCount++;
     if(songCount % 3 === 0) {
-      setTimeout(() => showAd(), 2000);
+      setTimeout(() => showFullAd(), 1500);
     }
   }
 };
+
+function showFullAd() {
+  const plan = currentUserData?.plan || 'free';
+  if(plan === 'premium') return;
+  
+  const cover = document.getElementById('fpCoverWrap');
+  const ad = document.getElementById('fpFullAd');
+  const header = document.querySelector('.fphd span');
+  
+  if(!ad) return;
+  
+  // Mostrar anuncio, ocultar portada
+  cover.style.display = 'none';
+  ad.style.display = 'block';
+  if(header) header.textContent = 'La música continuará después del anuncio';
+  
+  // Countdown 15 segundos
+  let secs = 15;
+  const timer = setInterval(() => {
+    secs--;
+    if(header) header.textContent = `Tiempo restante del anuncio: ${secs}s`;
+    if(secs <= 0) {
+      clearInterval(timer);
+      cover.style.display = 'block';
+      ad.style.display = 'none';
+      if(header) header.textContent = 'REPRODUCIENDO AHORA';
+    }
+  }, 1000);
+}
+
 
 
 
