@@ -1510,6 +1510,11 @@ window.guardarParaOffline = guardarParaOffline;
 // ===== INICIALIZACIÓN CORRECTA =====
 (function init() {
   console.log('🚀 Iniciando Streamify...');
+
+  // Renderizar inmediatamente con canciones locales
+  renderHome();
+  renderLib();
+  renderGenres();
   
   function waitForFirebase() {
     if (window.firebaseReady && window.FB && window.db) {
