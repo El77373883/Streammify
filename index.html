@@ -1866,20 +1866,26 @@ function showFullAd() {
   if(!ad) return;
   
   // Mostrar anuncio, ocultar portada
-  cover.style.display = 'none';
-ad.style.display = 'flex';
+    cover.style.display = 'none';
+  ad.style.display = 'flex';
   if(header) header.textContent = 'La música continuará después del anuncio';
-  
+  aud.pause();
+  playing = false;
+  updateIcons();
+
   // Countdown 15 segundos
   let secs = 15;
   const timer = setInterval(() => {
     secs--;
     if(header) header.textContent = `Tiempo restante del anuncio: ${secs}s`;
     if(secs <= 0) {
-      clearInterval(timer);
+            clearInterval(timer);
       cover.style.display = 'block';
       ad.style.display = 'none';
       if(header) header.textContent = 'REPRODUCIENDO AHORA';
+      aud.play().catch(()=>{});
+      playing = true;
+      updateIcons();
     }
   }, 1000);
 }
