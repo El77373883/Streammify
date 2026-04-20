@@ -2162,9 +2162,14 @@ const songData = {
   document.getElementById('songDuration').value = '';
   document.getElementById('songTags').value = '';
   document.getElementById('collabList').innerHTML = '';
+  document.getElementById('songGenre').value = 'Pop';
+  document.querySelectorAll('.genre-chip').forEach(c => c.classList.remove('active'));
+  const firstChip = document.querySelector('.genre-chip');
+  if (firstChip) firstChip.classList.add('active');
   clearImage('songCover');
   document.getElementById('songFeaturedSwitch').classList.remove('active');
 }
+
 
     
     function clearArtistForm() {
