@@ -934,6 +934,25 @@
         </div>
         
         <div class="form-group">
+  <label class="form-label">Tags / Hashtags</label>
+  <input type="text" class="form-input" id="songTags" placeholder="#trap #verano #reggaeton">
+  <div style="font-size:11px;color:var(--gr2);margin-top:6px;">Separa con espacios. Ej: #pop #fiesta</div>
+</div>
+
+<div class="form-group">
+  <label class="form-label">Colaboradores (ft.)</label>
+  <div id="collabList" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;min-height:32px;"></div>
+  <div style="display:flex;gap:8px;">
+    <select class="form-select" id="collabSelect" style="flex:1;">
+      <option value="">+ Agregar colaborador...</option>
+    </select>
+    <button class="submit-btn secondary" style="width:auto;padding:10px 16px;margin:0;" onclick="addCollab()">Agregar</button>
+  </div>
+</div>
+
+        
+        
+        <div class="form-group">
           <label class="form-label">Género *</label>
           <select class="form-select" id="songGenre">
             <option value="Pop">🎤 Pop</option>
@@ -1579,6 +1598,13 @@ document.getElementById('mainContent').classList.add('visible');
       const duration = parseInt(document.getElementById('songDuration').value) || 180;
       const coverUrl = document.getElementById('songCoverUrl').value;
       const featured = document.getElementById('songFeaturedSwitch').classList.contains('active');
+      const tags = document.getElementById('songTags').value.trim()
+  .split(/\s+/).filter(t => t.startsWith('#')).map(t => t.toLowerCase());
+const collabs = [...document.querySelectorAll('.collab-tag')].map(el => ({
+  id: el.dataset.id, name: el.dataset.name
+}));
+
+      
       
       if (!title || !artist || !genre || !url) {
         showToast('❌ Completa todos los campos obligatorios');
@@ -1600,6 +1626,8 @@ const songData = {
   duration,
   coverUrl,
   featured,
+  tags,
+  collaborators: collabs,
   plays: 0,
   order: songs.length,
   createdAt: new Date().toISOString()
