@@ -1872,6 +1872,17 @@ function showFullAd() {
   aud.pause();
   playing = false;
   updateIcons();
+  
+  // Reproducir audio del anuncio
+  const adSounds = [
+    'https://archive.org/download/coraz_n_a_mil/coraz_n_a_mil.mp3',
+    'https://archive.org/download/ritmo_que_quema/la_calle_te_mueve.mp3',
+    'https://archive.org/download/ritmo_que_quema/ritmo_que_quema.mp3',
+    'https://archive.org/download/ritmo_que_quema/un_loop_perfecto.mp3'
+  ];
+  const adAudio = new Audio(adSounds[Math.floor(Math.random() * adSounds.length)]);
+  adAudio.volume = 0.8;
+  adAudio.play().catch(()=>{});
 
   // Countdown 15 segundos
   let secs = 15;
@@ -1883,6 +1894,8 @@ function showFullAd() {
       cover.style.display = 'block';
       ad.style.display = 'none';
       if(header) header.textContent = 'REPRODUCIENDO AHORA';
+            adAudio.pause();
+      adAudio.currentTime = 0;
       aud.play().catch(()=>{});
       playing = true;
       updateIcons();
