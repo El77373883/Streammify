@@ -467,6 +467,21 @@ max-width: 75%;
 .playing-bars span:nth-child(3){height:8px;animation-delay:0.4s;}
 @keyframes bar{0%,100%{transform:scaleY(1);}50%{transform:scaleY(1.8);}}
 
+.ad-banner{position:fixed;bottom:calc(var(--nh) + var(--sb) + 70px);left:8px;right:8px;background:linear-gradient(135deg,#1a1a2e,#16213e);border:1px solid rgba(29,185,84,0.3);border-radius:16px;padding:12px 16px;z-index:300;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(0,0,0,0.6);animation:slideUp2 0.4s cubic-bezier(.32,.72,0,1);}
+@keyframes slideUp2{from{transform:translateY(100px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.ad-banner .ad-icon{font-size:28px;flex-shrink:0;}
+.ad-banner .ad-info{flex:1;min-width:0;}
+.ad-banner .ad-title{font-size:13px;font-weight:700;color:white;}
+.ad-banner .ad-sub{font-size:11px;color:var(--gr);margin-top:2px;}
+.ad-banner .ad-btn{background:var(--g);border:none;border-radius:20px;padding:8px 14px;color:black;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;}
+.ad-banner .ad-close{background:none;border:none;color:var(--gr);font-size:18px;cursor:pointer;flex-shrink:0;}
+.premium-popup{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:700;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px);}
+.premium-popup-box{background:var(--d2);border-radius:24px;padding:28px 24px;max-width:340px;width:100%;border:1px solid var(--g);text-align:center;}
+.premium-popup-box h3{font-size:22px;font-weight:800;margin-bottom:8px;}
+.premium-popup-box p{font-size:14px;color:var(--gr);margin-bottom:20px;line-height:1.5;}
+.premium-popup-box .pp-btn{width:100%;background:var(--g);border:none;border-radius:30px;padding:14px;color:black;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;}
+.premium-popup-box .pp-close{width:100%;background:transparent;border:1px solid var(--d4);border-radius:30px;padding:12px;color:var(--gr);font-size:14px;cursor:pointer;}
+
 
 </style>
 </head>
@@ -1663,6 +1678,94 @@ window.toggleTheme = toggleTheme;
 window.setAudioQuality = setAudioQuality;
 window.doLogout = doLogout;
 document.getElementById('profileModal').addEventListener('touchmove', e => e.stopPropagation(), {passive:true});
+
+// ===== LIMITACIONES FREE =====
+let skipCount = 0;
+let skipResetTime = Date.now();
+let songCount = 0;
+
+const ADS = [
+  {icon:'🎵', title:'Streamify Premium', sub:'Sin anuncios, descargas ilimitadas'},
+  {icon:'🔥', title:'¿Cansado de los anuncios?', sub:'Hazte Premium por solo $5.99/mes'},
+  {icon:'⭐', title:'Mejora tu experiencia', sub:'Audio 320kbps y modo offline'},
+];
+
+function showAd() {
+  if(currentUserData?.plan === 'premium') return;
+  const existing = document.getElementById('adBanner');
+  if(existing) existing.remove();
+  
+  const ad = ADS[Math.floor(Math.random() * ADS.length)];
+  const banner = document.createElement('div');
+  banner.className = 'ad-banner';
+  banner.id = 'adBanner';
+  banner.innerHTML = `
+    <div class="ad-icon">${ad.icon}</div>
+    <div class="ad-info">
+      <div class="ad-title">${ad.title}</div>
+      <div class="ad-sub">${ad.sub}</div>
+    </div>
+    <button class="ad-btn" onclick="window.location.href='precios.html'">Premium</button>
+    <button class="ad-close" onclick="document.getElementById('adBanner').remove()">✕</button>
+  `;
+  document.body.appendChild(banner);
+  setTimeout(() => { const b = document.getElementById('adBanner'); if(b) b.remove(); }, 8000);
+}
+
+function showPremiumPopup(msg) {
+  const popup = document.createElement('div');
+  popup.className = 'premium-popup';
+  popup.id = 'premiumPopup';
+  popup.innerHTML = `
+    <div class="premium-popup-box">
+      <div style="font-size:48px;margin-bottom:12px;">⭐</div>
+      <h3>Función Premium</h3>
+      <p>${msg}</p>
+      <button class="pp-btn" onclick="window.location.href='precios.html'">Hazte Premium</button>
+      <button class="pp-close" onclick="document.getElementById('premiumPopup').remove()">Ahora no</button>
+    </div>
+  `;
+  document.body.appendChild(popup);
+}
+
+// Override nextTrack para limitar saltos
+const originalNextTrack = nextTrack;
+window.nextTrack = function() {
+  if(currentUserData?.plan !== 'premium') {
+    if(Date.now() - skipResetTime > 3600000) {
+      skipCount = 0;
+      skipResetTime = Date.now();
+    }
+    if(skipCount >= 5) {
+      showPremiumPopup('El plan Free tiene 5 saltos por hora. Hazte Premium para saltos ilimitados 🎵');
+      return;
+    }
+    skipCount++;
+  }
+  originalNextTrack();
+};
+
+// Override toggleShuffle para bloquear en free
+const originalToggleShuffle = toggleShuffle;
+window.toggleShuffle = function() {
+  if(currentUserData?.plan !== 'premium' && !shuffle) {
+    showPremiumPopup('El modo aleatorio es exclusivo de Premium. ¡Desbloquéalo ahora! 🔀');
+    return;
+  }
+  originalToggleShuffle();
+};
+
+// Mostrar anuncio cada 3 canciones
+const originalPlayTrack = playTrack;
+window.playTrack = function(idx) {
+  originalPlayTrack(idx);
+  if(currentUserData?.plan !== 'premium') {
+    songCount++;
+    if(songCount % 3 === 0) {
+      setTimeout(() => showAd(), 2000);
+    }
+  }
+};
 
 
 </script>
