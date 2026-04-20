@@ -1732,6 +1732,111 @@ function setSpeed(speed) {
 aud.addEventListener('play', () => { if(!audioCtx) initEQ(); }, {once: true});
 
 
+// ===== DJ IA =====
+let currentMood = 'energético';
+let djPlaylistTracks = [];
+
+function setMood(mood) {
+  currentMood = mood;
+  document.querySelectorAll('.mood-btn').forEach(b => {
+    b.style.background = 'var(--d3)';
+    b.style.color = 'var(--gr)';
+  });
+  event.target.style.background = 'linear-gradient(135deg,#7c4dff,#e91e63)';
+  event.target.style.color = 'white';
+  toast('Mood: ' + mood);
+}
+
+function generateDJPlaylist() {
+  const btn = document.getElementById('djBtn');
+  btn.textContent = '⏳ Generando...';
+  btn.disabled = true;
+
+  const h = new Date().getHours();
+  const timeOfDay = h < 12 ? 'mañana' : h < 18 ? 'tarde' : 'noche';
+
+  // Lógica IA basada en mood + hora
+  const moodPals = {
+    'energético': [4,5,6,10],
+    'relajado':   [3,8,9,11],
+    'feliz':      [0,2,5,6],
+    'triste':     [1,7,9,3],
+    'workout':    [4,5,10,6],
+    'focus':      [3,8,11,9]
+  };
+
+  // Filtrar canciones por paleta de color (mood)
+  const targetPals = moodPals[currentMood] || [0,1,2,3];
+  let filtered = T.filter(t => targetPals.includes(t.pal));
+  
+  // Si hay historial, priorizar artistas escuchados
+  const topArtists = Object.entries(
+    history.reduce((acc, h) => {
+      const t = T[h.idx];
+      if(t) acc[t.artist] = (acc[t.artist] || 0) + 1;
+      return acc;
+    }, {})
+  ).sort((a,b) => b[1]-a[1]).slice(0,3).map(a => a[0]);
+
+  let prioritized = filtered.filter(t => topArtists.includes(t.artist));
+  let rest = filtered.filter(t => !topArtists.includes(t.artist));
+  
+  // Mezclar y tomar 8 canciones
+  const mixed = [...prioritized, ...rest].sort(() => Math.random() - 0.5).slice(0, 8);
+  if(mixed.length < 4) mixed.push(...T.sort(() => Math.random()-0.5).slice(0,4));
+  
+  djPlaylistTracks = mixed.slice(0, 8);
+
+  setTimeout(() => {
+    renderDJPlaylist(timeOfDay);
+    btn.textContent = '✨ Generar';
+    btn.disabled = false;
+  }, 1200);
+}
+
+function renderDJPlaylist(timeOfDay) {
+  const result = document.getElementById('djPlaylistResult');
+  const title = document.getElementById('djPlaylistTitle');
+  const list = document.getElementById('djTrackList');
+  
+  const moodEmojis = {energético:'⚡',relajado:'😌',feliz:'😄',triste:'😢',workout:'💪',focus:'🧠'};
+  title.textContent = `${moodEmojis[currentMood]} Mix ${currentMood} · ${timeOfDay} · ${djPlaylistTracks.length} canciones`;
+  
+  list.innerHTML = '';
+  djPlaylistTracks.forEach((t, i) => {
+    const item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;gap:10px;padding:8px 0;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);';
+    item.onclick = () => playDJTrack(i);
+    const thumb = document.createElement('div');
+    thumb.style.cssText = 'width:36px;height:36px;border-radius:6px;overflow:hidden;flex-shrink:0;';
+    thumb.appendChild(getImageOrCover(t, 72, false));
+    const info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0;';
+    info.innerHTML = `<div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.title}</div><div style="font-size:11px;color:var(--gr);">${t.artist}</div>`;
+    const num = document.createElement('div');
+    num.style.cssText = 'font-size:12px;color:var(--gr);';
+    num.textContent = i + 1;
+    item.append(num, thumb, info);
+    list.appendChild(item);
+  });
+  
+  result.style.display = 'block';
+  toast(`🤖 Mix generado: ${djPlaylistTracks.length} canciones`);
+}
+
+function playDJTrack(idx) {
+  if(djPlaylistTracks[idx]) playTrack(T.indexOf(djPlaylistTracks[idx]));
+}
+
+function playDJPlaylist() {
+  if(djPlaylistTracks.length) {
+    playTrack(T.indexOf(djPlaylistTracks[0]));
+    openFP();
+    toast('🤖 DJ IA reproduciendo...');
+  }
+}
+
+
 // Exponer función globalmente
 window.guardarParaOffline = guardarParaOffline;
 
