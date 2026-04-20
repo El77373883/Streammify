@@ -627,7 +627,12 @@ max-width: 75%;
       <div class="stitle">Hecho para ti</div><div class="hrow" id="featRow"></div>
       <div class="stitle">Artistas populares</div><div class="hrow" id="artRow"></div>
       <div class="stitle">Nuevos lanzamientos</div><div class="hrow" id="newRow"></div>
-      <div class="stitle">Tu historial</div><div class="hrow" id="histRow"></div>
+<div class="stitle">Tu historial</div><div class="hrow" id="histRow"></div>
+<div class="stitle">🔥 Del momento</div><div class="hrow" id="momRow"></div>
+<div class="stitle">🎵 Mix de artistas</div><div class="hrow" id="mixRow"></div>
+<div class="stitle">🎸 Géneros</div><div class="hrow" id="genRow"></div>
+<div class="stitle">⭐ Más escuchadas</div><div class="hrow" id="topRow"></div>
+
     </div>
     <div class="page" id="searchPage">
       <div class="shd">
@@ -1212,11 +1217,40 @@ function renderHome(){
   const nr=document.getElementById('newRow');nr.innerHTML='';
   T.slice(0,8).forEach((t,i)=>nr.appendChild(mkCard(t, t.artist, false, ()=>playTrack(T.indexOf(t)))));
   const hr=document.getElementById('histRow');hr.innerHTML='';
-  history.slice(0,8).forEach(h => {
+    history.slice(0,8).forEach(h => {
     const t = T[h.idx];
     if (t) hr.appendChild(mkCard(t, t.artist, false, () => playTrack(h.idx)));
   });
+
+// Del momento
+const momRow=document.getElementById('momRow');momRow.innerHTML='';
+T.slice().reverse().slice(0,8).forEach(t=>momRow.appendChild(mkCard(t,t.artist,false,()=>playTrack(T.indexOf(t)))));
+
+// Mix de artistas
+const mixRow=document.getElementById('mixRow');mixRow.innerHTML='';
+A.slice(0,6).forEach((a,i)=>{
+  const tid=a.tids[0];
+  if(tid!==undefined)mixRow.appendChild(mkCard({title:'Mix: '+a.name,pal:a.pal,coverUrl:a.avatarUrl||null},'Playlist · '+a.tids.length+' canciones',false,()=>playTrack(tid)));
+});
+
+// Géneros
+const genRow=document.getElementById('genRow');genRow.innerHTML='';
+const genres=[{n:'Pop',pal:1},{n:'Hip-Hop',pal:10},{n:'R&B',pal:2},{n:'Latino',pal:4},{n:'Rock',pal:7},{n:'Electronic',pal:3}];
+genres.forEach(g=>genRow.appendChild(mkCard({title:g.n,pal:g.pal},g.n,false,()=>toast(g.n))));
+
+// Más escuchadas
+const topRow=document.getElementById('topRow');topRow.innerHTML='';
+const topSorted=Object.entries(stats).sort((a,b)=>b[1]-a[1]).slice(0,8);
+if(topSorted.length){
+  topSorted.forEach(([title])=>{
+    const t=T.find(s=>s.title===title);
+    if(t)topRow.appendChild(mkCard(t,t.artist,false,()=>playTrack(T.indexOf(t))));
+  });
+}else{
+  T.slice(0,8).forEach(t=>topRow.appendChild(mkCard(t,t.artist,false,()=>playTrack(T.indexOf(t)))));
 }
+}
+
 
 function renderGenres(){
   const genres=[
