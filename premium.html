@@ -1624,7 +1624,6 @@ function initEQ() {
   if (audioCtx) return;
   try {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
     sourceNode = audioCtx.createMediaElementSource(aud);
     let lastNode = sourceNode;
     EQ_FREQS.forEach((freq, i) => {
@@ -1636,7 +1635,8 @@ function initEQ() {
       lastNode = filter;
       eqFilters.push(filter);
     });
-    lastNode.connect(audioCtx.destination);
+        lastNode.connect(audioCtx.destination);
+    audioCtx.resume();
   } catch(e) { console.log('EQ no disponible:', e); }
 }
 
@@ -1699,10 +1699,15 @@ function setSpeed(speed) {
 }
 
 // Iniciar EQ al primer play
-aud.addEventListener('play', () => {
+document.addEventListener('touchstart', () => {
   if(!audioCtx) initEQ();
+  else if(audioCtx.state === 'suspended') audioCtx.resume();
+}, {once: true});
+
+aud.addEventListener('play', () => {
   if(audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
 });
+
 
 
 
