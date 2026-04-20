@@ -1030,14 +1030,23 @@
         <div class="form-group">
           <label class="form-label">Género principal *</label>
           <select class="form-select" id="artistGenre">
-            <option value="Pop">🎤 Pop</option>
-            <option value="Rap">🎧 Rap</option>
-            <option value="Trap">🔥 Trap</option>
-            <option value="Reggaetón">💃 Reggaetón</option>
-            <option value="Electrónica">🎛️ Electrónica</option>
-            <option value="R&B">🎵 R&B</option>
-            <option value="Rock">🎸 Rock</option>
-            <option value="Latino">🌴 Latino</option>
+<option value="Pop">🎤 Pop</option>
+<option value="Rap">🎧 Rap</option>
+<option value="Trap">🔥 Trap</option>
+<option value="Reggaetón">💃 Reggaetón</option>
+<option value="Electrónica">🎛️ Electrónica</option>
+<option value="R&B">🎵 R&B</option>
+<option value="Rock">🎸 Rock</option>
+<option value="Latino">🌴 Latino</option>
+<option value="Indie">🌿 Indie</option>
+<option value="Hip-Hop">🎙️ Hip-Hop</option>
+<option value="Corridos">🤠 Corridos</option>
+<option value="Corridos Tumbados">🎸 Corridos Tumbados</option>
+<option value="Phonk">💀 Phonk</option>
+<option value="Debow">🥁 Debow</option>
+<option value="Salsa">🎺 Salsa</option>
+<option value="Bachata">🌹 Bachata</option>
+<option value="Cumbia">🪗 Cumbia</option>
           </select>
         </div>
         
@@ -1993,7 +2002,12 @@ const songData = {
           </label>
         </div>
       `).join('');
+
+      const collabSel = document.getElementById('collabSelect');
+      collabSel.innerHTML = '<option value="">+ Agregar colaborador...</option>' +
+        artists.map(a => `<option value="${a.id}">${a.name}</option>`).join('');
     }
+
     
     // Dashboard
     function updateDashboard() {
@@ -2100,15 +2114,18 @@ const songData = {
     }
     
     function clearSongForm() {
-      document.getElementById('songTitle').value = '';
-      document.getElementById('songArtist').value = '';
-      document.getElementById('songAlbum').value = '';
-      document.getElementById('songUrl').value = '';
-      document.getElementById('songLyrics').value = '';
-      document.getElementById('songDuration').value = '';
-      clearImage('songCover');
-      document.getElementById('songFeaturedSwitch').classList.remove('active');
-    }
+  document.getElementById('songTitle').value = '';
+  document.getElementById('songArtist').value = '';
+  document.getElementById('songAlbum').value = '';
+  document.getElementById('songUrl').value = '';
+  document.getElementById('songLyrics').value = '';
+  document.getElementById('songDuration').value = '';
+  document.getElementById('songTags').value = '';
+  document.getElementById('collabList').innerHTML = '';
+  clearImage('songCover');
+  document.getElementById('songFeaturedSwitch').classList.remove('active');
+}
+
     
     function clearArtistForm() {
       document.getElementById('artistName').value = '';
@@ -2351,6 +2368,25 @@ function editBanner(id) {
   switchTab('banners');
   showToast('✏️ Editando: ' + banner.title);
 }
+    
+    function addCollab() {
+  const sel = document.getElementById('collabSelect');
+  const id = sel.value;
+  const name = sel.options[sel.selectedIndex].text;
+  if (!id) return;
+  if (document.querySelector(`.collab-tag[data-id="${id}"]`)) {
+    showToast('Ya está agregado'); return;
+  }
+  const tag = document.createElement('div');
+  tag.className = 'collab-tag';
+  tag.dataset.id = id;
+  tag.dataset.name = name;
+  tag.style.cssText = 'background:var(--g);color:black;padding:6px 12px;border-radius:20px;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;';
+  tag.innerHTML = `${name} <span onclick="this.parentNode.remove()" style="cursor:pointer;font-size:16px;">×</span>`;
+  document.getElementById('collabList').appendChild(tag);
+  sel.value = '';
+}
+
     
   </script>
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
