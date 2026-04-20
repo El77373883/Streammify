@@ -1656,12 +1656,12 @@ const collabs = [...document.querySelectorAll('.collab-tag')].map(el => ({
 
       
       
-      if (!title || !artist || !genre || !url) {
+if (!title || !url) {
         showToast('❌ Completa todos los campos obligatorios');
         return;
       }
       
-const artistName = document.getElementById('songArtist').options[document.getElementById('songArtist').selectedIndex].text;
+const artistName = artist ? document.getElementById('songArtist').options[document.getElementById('songArtist').selectedIndex].text : 'Desconocido';
 
 const songData = {
   title,
