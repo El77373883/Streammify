@@ -1002,7 +1002,7 @@ async function loadFirestoreSongs() {
   try {
     const { collection, getDocs, query, orderBy } = window.FB;
     
-    const q = query(collection(window.db, 'songs'), orderBy('createdAt', 'desc'));
+const q = query(collection(window.db, 'songs'), orderBy('order', 'asc'));
     const snapshot = await getDocs(q);
     const firestoreSongs = snapshot.docs.map(doc => {
       const data = doc.data();
