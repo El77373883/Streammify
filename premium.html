@@ -648,6 +648,31 @@ max-width: 75%;
 <div class="stitle">🎸 Géneros</div><div class="hrow" id="genRow"></div>
 <div class="stitle">⭐ Más escuchadas</div><div class="hrow" id="topRow"></div>
 
+<div id="djAISection" style="margin:0 16px 24px;background:linear-gradient(135deg,#0a0a1a,#1a0a2e);border-radius:20px;padding:20px;border:1px solid rgba(124,77,255,0.3);">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+    <div style="width:40px;height:40px;background:linear-gradient(135deg,#7c4dff,#e91e63);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;">🤖</div>
+    <div>
+      <div style="font-size:16px;font-weight:800;">DJ IA</div>
+      <div style="font-size:12px;color:var(--gr);">Playlist generada para ti ahora</div>
+    </div>
+    <button onclick="generateDJPlaylist()" id="djBtn" style="margin-left:auto;background:linear-gradient(135deg,#7c4dff,#e91e63);border:none;border-radius:20px;padding:10px 18px;color:white;font-size:13px;font-weight:700;cursor:pointer;">✨ Generar</button>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;" id="moodBtns">
+    <button onclick="setMood('energético')" class="mood-btn" style="background:var(--d3);border:none;color:var(--gr);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">⚡ Energético</button>
+    <button onclick="setMood('relajado')" class="mood-btn" style="background:var(--d3);border:none;color:var(--gr);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">😌 Relajado</button>
+    <button onclick="setMood('feliz')" class="mood-btn" style="background:var(--d3);border:none;color:var(--gr);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">😄 Feliz</button>
+    <button onclick="setMood('triste')" class="mood-btn" style="background:var(--d3);border:none;color:var(--gr);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">😢 Triste</button>
+    <button onclick="setMood('workout')" class="mood-btn" style="background:var(--d3);border:none;color:var(--gr);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">💪 Workout</button>
+    <button onclick="setMood('focus')" class="mood-btn" style="background:var(--d3);border:none;color:var(--gr);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">🧠 Focus</button>
+  </div>
+  <div id="djPlaylistResult" style="display:none;">
+    <div style="font-size:13px;color:var(--gr);margin-bottom:10px;" id="djPlaylistTitle">Tu mix personalizado</div>
+    <div id="djTrackList"></div>
+    <button onclick="playDJPlaylist()" style="width:100%;background:linear-gradient(135deg,#7c4dff,#e91e63);border:none;border-radius:30px;padding:12px;color:white;font-size:14px;font-weight:700;margin-top:12px;cursor:pointer;">▶ Reproducir Mix</button>
+  </div>
+</div>
+
+
     </div>
     <div class="page" id="searchPage">
       <div class="shd">
@@ -748,6 +773,95 @@ max-width: 75%;
     <button class="fpct" onclick="nextTrack()"><svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
     <button class="fpct" id="repBtn" onclick="toggleRepeat()"><svg width="26" height="26" fill="none" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 014-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 01-4 4H3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
   </div>
+  
+  <div style="padding:0 24px 16px;">
+  <!-- Velocidad -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <span style="font-size:12px;color:var(--gr);font-weight:600;">⚡ VELOCIDAD</span>
+    <div style="display:flex;gap:8px;">
+      <button onclick="setSpeed(0.5)" id="spd05" style="background:var(--d3);border:none;color:var(--gr);padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;">0.5x</button>
+      <button onclick="setSpeed(0.75)" id="spd075" style="background:var(--d3);border:none;color:var(--gr);padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;">0.75x</button>
+      <button onclick="setSpeed(1)" id="spd1" style="background:var(--g);border:none;color:black;padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;">1x</button>
+      <button onclick="setSpeed(1.25)" id="spd125" style="background:var(--d3);border:none;color:var(--gr);padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;">1.25x</button>
+      <button onclick="setSpeed(1.5)" id="spd15" style="background:var(--d3);border:none;color:var(--gr);padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;">1.5x</button>
+      <button onclick="setSpeed(2)" id="spd2" style="background:var(--d3);border:none;color:var(--gr);padding:6px 10px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;">2x</button>
+    </div>
+  </div>
+  <!-- Ecualizador -->
+  <div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+      <span style="font-size:12px;color:var(--gr);font-weight:600;">🎛️ ECUALIZADOR</span>
+      <button onclick="resetEQ()" style="background:none;border:none;color:var(--g);font-size:12px;cursor:pointer;font-weight:600;">Reset</button>
+    </div>
+    <div style="display:flex;gap:6px;align-items:flex-end;height:80px;" id="eqBands">
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(0,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">60</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(1,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">170</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(2,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">310</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(3,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">600</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(4,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">1K</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(5,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">3K</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(6,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">6K</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(7,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">12K</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(8,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">14K</span>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;">
+        <input type="range" min="-12" max="12" value="0" step="1" oninput="setEQ(9,this.value)" style="writing-mode:vertical-lr;direction:rtl;height:50px;accent-color:var(--g);">
+        <span style="font-size:9px;color:var(--gr);">16K</span>
+      </div>
+    </div>
+    
+    <!-- Crossfade -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+  <span style="font-size:12px;color:var(--gr);font-weight:600;">🎚️ CROSSFADE</span>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <input type="range" min="1" max="8" value="3" step="1" oninput="setCrossfade(this.value)" style="width:80px;accent-color:var(--g);">
+    <span id="crossfadeVal" style="font-size:12px;color:white;font-weight:700;min-width:20px;">3s</span>
+    <div onclick="toggleCrossfade()" id="crossfadeToggle" style="width:36px;height:20px;background:var(--g);border-radius:20px;position:relative;cursor:pointer;">
+      <div id="crossfadeDot" style="position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:2px;right:2px;transition:all 0.3s;"></div>
+    </div>
+  </div>
+</div>
+
+    
+    <!-- Presets EQ -->
+    <div style="display:flex;gap:6px;margin-top:10px;overflow-x:auto;padding-bottom:4px;">
+      <button onclick="applyPreset('flat')" style="background:var(--d3);border:none;color:var(--gr);padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">Plano</button>
+      <button onclick="applyPreset('bass')" style="background:var(--d3);border:none;color:var(--gr);padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">🔊 Bass</button>
+      <button onclick="applyPreset('pop')" style="background:var(--d3);border:none;color:var(--gr);padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">🎤 Pop</button>
+      <button onclick="applyPreset('rock')" style="background:var(--d3);border:none;color:var(--gr);padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">🎸 Rock</button>
+      <button onclick="applyPreset('jazz')" style="background:var(--d3);border:none;color:var(--gr);padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">🎷 Jazz</button>
+      <button onclick="applyPreset('electronic')" style="background:var(--d3);border:none;color:var(--gr);padding:5px 10px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;">🎛️ Electronic</button>
+    </div>
+  </div>
+</div>
+
+  
 <div class="fpex">
     <button class="fpexbt" id="fpDownloadBtn"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 21h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Descargar</button>
     <button class="fpexbt" onclick="toast('Conectar dispositivo')"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Dispositivos</button>
@@ -1489,7 +1603,35 @@ aud.addEventListener('timeupdate',()=>{
   document.getElementById('fpCur').textContent=fmt(aud.currentTime);
   document.getElementById('fpTot').textContent=fmt(aud.duration);
 });
-aud.addEventListener('ended',()=>{if(!repeat)nextTrack();});
+aud.addEventListener('ended',()=>{if(!repeat)nextTrackCrossfade();});
+
+// ===== CROSSFADE PREMIUM =====
+let crossfadeTime = 3; // segundos
+let crossfadeActive = true;
+
+function nextTrackCrossfade() {
+  if(!crossfadeActive || !audioCtx) { nextTrack(); return; }
+  const nextIdx = shuffle ? Math.floor(Math.random()*T.length) : (curIdx+1)%T.length;
+  if(!T[nextIdx]) return;
+  
+  // Fade out actual
+  const startVol = aud.volume;
+  let fadeOut = setInterval(() => {
+    if(aud.volume > 0.05) aud.volume = Math.max(0, aud.volume - startVol/(crossfadeTime*10));
+    else { clearInterval(fadeOut); aud.volume = 1; nextTrack(); }
+  }, 100);
+}
+
+// Detectar cuando faltan X segundos para hacer crossfade
+aud.addEventListener('timeupdate', () => {
+  if(!crossfadeActive || !aud.duration) return;
+  const remaining = aud.duration - aud.currentTime;
+  if(remaining <= crossfadeTime && remaining > 0 && !aud._crossfading) {
+    aud._crossfading = true;
+    setTimeout(() => { aud._crossfading = false; }, (crossfadeTime+1)*1000);
+  }
+});
+
 aud.addEventListener('play',()=>{playing=true;updateIcons();});
 aud.addEventListener('pause',()=>{playing=false;updateIcons();});
 function seekMini(e){const b=e.currentTarget;if(aud.duration)aud.currentTime=(e.offsetX/b.offsetWidth)*aud.duration;}
@@ -1504,6 +1646,92 @@ function goPage(name){
   document.getElementById('nb'+name[0].toUpperCase()+name.slice(1)).classList.add('on');
   document.getElementById('pages').scrollTop=0;
 }
+
+// ===== ECUALIZADOR Y VELOCIDAD =====
+let audioCtx, sourceNode, eqFilters = [];
+const EQ_FREQS = [60, 170, 310, 600, 1000, 3000, 6000, 12000, 14000, 16000];
+
+function initEQ() {
+  if (audioCtx) return;
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    sourceNode = audioCtx.createMediaElementSource(aud);
+    let lastNode = sourceNode;
+    EQ_FREQS.forEach((freq, i) => {
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = i === 0 ? 'lowshelf' : i === EQ_FREQS.length - 1 ? 'highshelf' : 'peaking';
+      filter.frequency.value = freq;
+      filter.gain.value = 0;
+      lastNode.connect(filter);
+      lastNode = filter;
+      eqFilters.push(filter);
+    });
+    lastNode.connect(audioCtx.destination);
+  } catch(e) { console.log('EQ no disponible:', e); }
+}
+
+function setEQ(band, value) {
+  if (!audioCtx) initEQ();
+  if (eqFilters[band]) eqFilters[band].gain.value = parseFloat(value);
+}
+
+function resetEQ() {
+  eqFilters.forEach(f => f.gain.value = 0);
+  document.querySelectorAll('#eqBands input').forEach(i => i.value = 0);
+  toast('EQ reseteado');
+}
+
+const PRESETS = {
+  flat:       [0,0,0,0,0,0,0,0,0,0],
+  bass:       [8,6,4,2,0,0,0,0,0,0],
+  pop:        [-2,0,2,4,4,2,0,-2,-2,-2],
+  rock:       [6,4,2,0,-2,0,2,4,6,6],
+  jazz:       [4,2,0,2,4,4,2,0,2,2],
+  electronic: [6,4,0,-2,-2,0,2,4,6,8]
+};
+
+function applyPreset(name) {
+  if (!audioCtx) initEQ();
+  const vals = PRESETS[name];
+  vals.forEach((v, i) => {
+    if (eqFilters[i]) eqFilters[i].gain.value = v;
+  });
+  document.querySelectorAll('#eqBands input').forEach((input, i) => input.value = vals[i]);
+  toast('Preset: ' + name);
+}
+
+
+function setCrossfade(val) {
+  crossfadeTime = parseInt(val);
+  document.getElementById('crossfadeVal').textContent = val + 's';
+}
+
+function toggleCrossfade() {
+  crossfadeActive = !crossfadeActive;
+  const toggle = document.getElementById('crossfadeToggle');
+  const dot = document.getElementById('crossfadeDot');
+  toggle.style.background = crossfadeActive ? 'var(--g)' : 'var(--gr2)';
+  dot.style.right = crossfadeActive ? '2px' : 'calc(100% - 18px)';
+  toast(crossfadeActive ? '🎚️ Crossfade activado' : 'Crossfade desactivado');
+}
+
+
+function setSpeed(speed) {
+  aud.playbackRate = speed;
+  document.querySelectorAll('[id^="spd"]').forEach(btn => {
+    btn.style.background = 'var(--d3)';
+    btn.style.color = 'var(--gr)';
+  });
+  const id = 'spd' + String(speed).replace('.', '');
+  const btn = document.getElementById(id);
+  if(btn) { btn.style.background = 'var(--g)'; btn.style.color = 'black'; }
+  toast(`Velocidad: ${speed}x`);
+}
+
+// Iniciar EQ al primer play
+aud.addEventListener('play', () => { if(!audioCtx) initEQ(); }, {once: true});
+
+
 // Exponer función globalmente
 window.guardarParaOffline = guardarParaOffline;
 
