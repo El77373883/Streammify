@@ -483,38 +483,85 @@ max-width: 75%;
 .premium-popup-box .pp-close{width:100%;background:transparent;border:1px solid var(--d4);border-radius:30px;padding:12px;color:var(--gr);font-size:14px;cursor:pointer;}
 
 
+/* ===== MODO CANVAS CORREGIDO (IPHONE) ===== */
 #fp.canvas-mode {
-  background: transparent !important;
+  background: #000 !important;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
+  justify-content: flex-end; /* Esto empuja los controles hacia abajo */
 }
-#fp.canvas-mode .fpcover{position:fixed;inset:0;z-index:0;padding:0;}
-#fp.canvas-mode .fpcvwrap {
-  border-radius:0;
-  width:100%;
-  height:100dvh; /* ✅ CORREGIDO */
-  position: relative; /* AÑADIDO */
-}
-#fp.canvas-mode::before{content:'';position:fixed;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.0) 30%,rgba(0,0,0,0.0) 50%,rgba(0,0,0,0.8) 75%,rgba(0,0,0,0.97) 100%);pointer-events:none;}
-#fp.canvas-mode .fphd {
-  position: fixed;
-  top: calc(var(--st) + 16px); /* Ajuste con safe area */
+
+#fp.canvas-mode .fpcover {
+  position: absolute;
+  top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
-  padding: 0 20px;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(10px);
+  bottom: 0;
+  z-index: 1;
+  padding: 0;
 }
+
+#fp.canvas-mode .fpcvwrap {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+#fp.canvas-mode .fpcvwrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Capa de gradiente encima del video para que los controles se lean bien */
+#fp.canvas-mode::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(to bottom, 
+    rgba(0,0,0,0.4) 0%, 
+    rgba(0,0,0,0) 30%,
+    rgba(0,0,0,0) 60%,
+    rgba(0,0,0,0.7) 85%, 
+    rgba(0,0,0,0.95) 100%);
+  pointer-events: none;
+}
+
+/* Todos los controles van por ENCIMA del video */
+#fp.canvas-mode .fphd,
 #fp.canvas-mode .fpmeta,
+#fp.canvas-mode .lyrics-container,
 #fp.canvas-mode .fpprog,
 #fp.canvas-mode .fpctrls,
-#fp.canvas-mode .fpex,
-#fp.canvas-mode .lyrics-container{position:relative;z-index:10;margin-top:0;}
-#fp.canvas-mode .fphd ~ *:not(.fpcover){margin-top:auto;}
+#fp.canvas-mode .fpex {
+  position: relative;
+  z-index: 10;
+  background: transparent;
+}
 
+/* El header se mantiene arriba */
+#fp.canvas-mode .fphd {
+  position: absolute;
+  top: calc(var(--st) + 8px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 0 20px;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+/* Los controles de abajo se anclan al fondo */
+#fp.canvas-mode .fpctrls {
+  margin-top: auto;
+  padding-bottom: 20px;
+}
+
+#fp.canvas-mode .fpex {
+  padding-bottom: 40px;
+}
 
 
 </style>
