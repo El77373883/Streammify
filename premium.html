@@ -483,7 +483,6 @@ max-width: 75%;
 .premium-popup-box .pp-close{width:100%;background:transparent;border:1px solid var(--d4);border-radius:30px;padding:12px;color:var(--gr);font-size:14px;cursor:pointer;}
 
 
-/* CONTENEDOR GENERAL PARA VIDEO (PREMIUM) */
 #fp.canvas-mode {
   background: #000 !important;
   display: flex;
@@ -491,47 +490,43 @@ max-width: 75%;
   justify-content: flex-end; 
   height: 100dvh;
   overflow: hidden;
-  padding-bottom: 40px; /* Espacio para que no pegue al borde del iPhone */
+  padding-bottom: 20px;
 }
 
-/* EL VIDEO (SOLO PREMIUM): Se va al fondo total */
+/* 1. EL VIDEO: Fondo total que no estorba al texto */
 #fp.canvas-mode .fpcover {
-  position: fixed; 
+  position: fixed !important;
   inset: 0;
   z-index: 0;
-  padding: 0;
 }
 
 #fp.canvas-mode video, 
 #fp.canvas-mode canvas {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* Video a pantalla completa */
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
 }
 
-/* LA CAPA OSCURA: Para que el texto blanco resalte sobre el video */
+/* 2. EL DEGRADADO: Para que el video se funda con el negro abajo */
 #fp.canvas-mode::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to top, 
-    #000 0%, 
-    rgba(0,0,0,0.8) 20%, 
-    transparent 60%);
+  background: linear-gradient(to top, #000 25%, transparent 60%);
   pointer-events: none;
 }
 
-/* EL NOMBRE Y ARTISTA: Los bajamos para que no tapen el video */
+/* 3. LOS CONTROLES: Los alineamos perfectamente */
 #fp.canvas-mode .fpmeta {
   position: relative;
   z-index: 10;
   padding: 0 25px;
-  margin-top: 50vh !important; /* Empuja el texto hacia la mitad inferior */
+  /* El margen top "auto" junto con flex-end los mantendrá abajo */
+  margin-top: auto !important; 
   margin-bottom: 15px;
 }
 
-/* BARRA DE PROGRESO Y TIEMPOS */
 #fp.canvas-mode .fpprog {
   position: relative;
   z-index: 10;
@@ -539,29 +534,27 @@ max-width: 75%;
   margin-bottom: 20px;
 }
 
-/* BOTONES DE REPRODUCCIÓN */
 #fp.canvas-mode .fpctrls {
   position: relative;
   z-index: 10;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
-/* OPCIONES (DESCARGAR, COLA, ETC) */
 #fp.canvas-mode .fpex {
   position: relative;
   z-index: 10;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
-/* HEADER (EL BOTÓN DE BAJAR EL REPRODUCTOR) */
+/* 4. EL HEADER: Botón de bajar */
 #fp.canvas-mode .fphd {
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 100;
   padding-top: 40px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
 }
+
 
 
 
