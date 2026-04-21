@@ -2159,7 +2159,7 @@ function eliminarCuentaCompartida(id) {
 function loadSavedAccounts() {
   const plan = currentUserData?.plan || 'free';
   const panel = document.getElementById('panelCuentas');
-  if (plan === 'duo' || plan === 'familiar') {
+ if (plan === 'duo' || plan === 'familiar' || plan === 'premium') {
     renderSharedAccounts();
   } else {
     panel.innerHTML = `
