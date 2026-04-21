@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#FFD700">
+  <title>Streamify Premium Admin</title>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAP5pHkk4Cm5-d6btJCN1MSLQBH699cV-0",
+      authDomain: "project-8fc84ba4-98a9-4394-b66.firebaseapp.com",
+      projectId: "project-8fc84ba4-98a9-4394-b66",
+      storageBucket: "project-8fc84ba4-98a9-4394-b66.firebasestorage.app",
+      messagingSenderId: "873347768381",
+      appId: "1:873347768381:web:75cdd37df970ba14984a54"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    window.db = db;
+    window.FB = { collection, getDocs, doc, updateDoc, query, orderBy, setDoc };
+    window.firebaseReady = true;
+  </script>
+
+  <style>
+    :root {
+      --g: #1DB954; --gold: #FFD700; --duo: #4a9eff; --fam: #e91e63;
+      --bk: #000; --d: #121212; --d2: #181818; --d3: #282828; --d4: #3e3e3e;
+      --w: #fff; --gr: #b3b3b3; --gr2: #535353; --danger: #e91429;
+      --sb: env(safe-area-inset-bottom, 0px); --st: env(safe-area-inset-top, 0px);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      background: var(--bk); color: var(--w);
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+      padding: calc(var(--st) + 16px) 16px calc(var(--sb) + 80px);
+      min-height: 100vh;
+    }
+    #loginScreen {
+      position: fixed; inset: 0;
+      background: linear-gradient(135deg, #0a1628, #1a0a2e);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; padding: 20px;
+    }
+    .login-box {
+      background: rgba(255,255,255,0.07); backdrop-filter: blur(20px);
+      border-radius: 24px; padding: 40px 24px; width: 100%; max-width: 380px;
+      border: 1px solid rgba(255,215,0,0.2); box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .login-logo { text-align: center; margin-bottom: 28px; }
+    .login-logo .crown { font-size: 52px; margin-bottom: 8px; }
+    .login-logo h1 {
+      font-size: 26px; font-weight: 800;
+      background: linear-gradient(135deg, var(--gold), #ff9800);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .login-logo p { font-size: 13px; color: var(--gr); margin-top: 4px; }
+    .login-input {
+      width: 100%; background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,215,0,0.3); border-radius: 14px;
+      padding: 16px; color: white; font-size: 16px; margin-bottom: 16px; outline: none;
+    }
+    .login-input:focus { border-color: var(--gold); }
+    .login-btn {
+      width: 100%; background: linear-gradient(135deg, var(--gold), #ff9800);
+      border: none; border-radius: 30px; padding: 16px;
+      color: black; font-size: 16px; font-weight: 800; cursor: pointer;
+    }
+    .login-error { color: var(--danger); font-size: 13px; text-align: center; margin-top: 12px; min-height: 20px; }
+
+    #mainContent { display: none; }
+    #mainContent.visible { display: block; }
+
+    .admin-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; position: sticky; top: calc(var(--st) + 16px);
+      z-index: 10; background: var(--bk); padding: 8px 0;
+    }
+    .admin-header h1 {
+      font-size: 20px; font-weight: 800;
+      background: linear-gradient(135deg, var(--gold), #ff9800);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .logout-btn {
+      background: var(--d3); border: none; border-radius: 20px;
+      padding: 10px 18px; color: var(--w); font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+
+    .admin-tabs {
+      display: flex; gap: 8px; margin-bottom: 20px;
+      overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px;
+    }
+    .admin-tabs::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      background: var(--d3); border: none; border-radius: 20px;
+      padding: 10px 18px; color: var(--gr); font-size: 14px;
+      font-weight: 600; white-space: nowrap; cursor: pointer;
+    }
+    .tab-btn.active { background: linear-gradient(135deg, var(--gold), #ff9800); color: black; }
+
+    .panel { display: none; }
+    .panel.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+    .stat-card { border-radius: 16px; padding: 18px 14px; border: 1px solid var(--d3); }
+    .stat-card.gold { background: linear-gradient(135deg, #2a1f00, #1a1200); border-color: rgba(255,215,0,0.3); }
+    .stat-card.blue { background: linear-gradient(135deg, #001a2e, #000f1a); border-color: rgba(74,158,255,0.3); }
+    .stat-card.pink { background: linear-gradient(135deg, #2a001a, #1a000f); border-color: rgba(233,30,99,0.3); }
+    .stat-card.green { background: linear-gradient(135deg, #001a0a, #000f05); border-color: rgba(29,185,84,0.3); }
+    .stat-icon { font-size: 24px; margin-bottom: 8px; }
+    .stat-value { font-size: 28px; font-weight: 800; margin-bottom: 4px; }
+    .stat-label { font-size: 12px; color: var(--gr); }
+
+    .plan-badge {
+      padding: 4px 12px; border-radius: 20px; font-size: 11px;
+      font-weight: 800; display: inline-block;
+    }
+    .plan-badge.individual { background: rgba(29,185,84,0.2); color: var(--g); border: 1px solid rgba(29,185,84,0.4); }
+    .plan-badge.duo { background: rgba(74,158,255,0.2); color: var(--duo); border: 1px solid rgba(74,158,255,0.4); }
+    .plan-badge.familiar { background: rgba(233,30,99,0.2); color: var(--fam); border: 1px solid rgba(233,30,99,0.4); }
+    .plan-badge.free { background: var(--d3); color: var(--gr); }
+
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .section-title { font-size: 17px; font-weight: 700; }
+    .count-badge { background: var(--d3); padding: 4px 10px; border-radius: 12px; font-size: 12px; color: var(--gr); }
+
+    .item-list { background: var(--d2); border-radius: 20px; overflow: hidden; border: 1px solid var(--d3); margin-bottom: 20px; }
+    .list-item { display: flex; align-items: center; padding: 14px 16px; border-bottom: 1px solid var(--d3); }
+    .list-item:last-child { border-bottom: none; }
+
+    .user-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--g), #0a5c2a);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; margin-right: 12px; flex-shrink: 0;
+    }
+    .user-info { flex: 1; min-width: 0; }
+    .user-name { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-email { font-size: 11px; color: var(--gr); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-meta { font-size: 11px; color: var(--gr2); margin-top: 2px; }
+
+    .plan-select-mini {
+      background: var(--d3); border: 1px solid var(--d4);
+      border-radius: 10px; padding: 8px 10px; color: white;
+      font-size: 12px; font-weight: 600; cursor: pointer; outline: none;
+      font-family: inherit;
+    }
+
+    .form-section { background: var(--d2); border-radius: 20px; padding: 20px; margin-bottom: 20px; border: 1px solid var(--d3); }
+    .form-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--gr); margin-bottom: 8px; }
+    .form-input {
+      width: 100%; background: var(--d3); border: 1px solid transparent;
+      border-radius: 12px; padding: 14px 16px; color: white; font-size: 15px;
+      outline: none; font-family: inherit;
+    }
+    .form-input:focus { border-color: var(--gold); }
+    .form-input::placeholder { color: var(--gr2); }
+    .form-select {
+      width: 100%; background: var(--d3); border: 1px solid transparent;
+      border-radius: 12px; padding: 14px 16px; color: white; font-size: 15px;
+      outline: none; font-family: inherit; cursor: pointer;
+    }
+    .form-select:focus { border-color: var(--gold); }
+
+    .submit-btn {
+      width: 100%; background: linear-gradient(135deg, var(--gold), #ff9800);
+      border: none; border-radius: 30px; padding: 16px;
+      color: black; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 8px;
+    }
+    .submit-btn.secondary { background: var(--d3); color: var(--w); }
+
+    .song-canvas-item {
+      display: flex; flex-direction: column; gap: 10px;
+      padding: 16px; border-bottom: 1px solid var(--d3);
+    }
+    .song-canvas-item:last-child { border-bottom: none; }
+    .song-canvas-top { display: flex; align-items: center; gap: 12px; }
+    .song-thumb { width: 48px; height: 48px; border-radius: 8px; overflow: hidden; flex-shrink: 0; background: var(--d3); }
+    .song-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .song-info { flex: 1; min-width: 0; }
+    .song-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .song-artist { font-size: 12px; color: var(--gr); margin-top: 2px; }
+    .canvas-status { font-size: 11px; padding: 3px 10px; border-radius: 20px; font-weight: 700; flex-shrink: 0; }
+    .canvas-status.has { background: rgba(29,185,84,0.2); color: var(--g); }
+    .canvas-status.none { background: var(--d3); color: var(--gr); }
+
+    .canvas-url-row { display: flex; gap: 8px; }
+    .canvas-url-input {
+      flex: 1; background: var(--d3); border: 1px solid transparent;
+      border-radius: 10px; padding: 10px 14px; color: white; font-size: 13px;
+      outline: none; font-family: inherit;
+    }
+    .canvas-url-input:focus { border-color: var(--gold); }
+    .canvas-url-input::placeholder { color: var(--gr2); }
+    .canvas-save-btn {
+      background: linear-gradient(135deg, var(--gold), #ff9800);
+      border: none; border-radius: 10px; padding: 10px 16px;
+      color: black; font-size: 13px; font-weight: 800; cursor: pointer; white-space: nowrap;
+    }
+
+    #toast {
+      position: fixed; bottom: calc(var(--sb) + 20px); left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: var(--d2); color: white; padding: 14px 24px;
+      border-radius: 40px; font-size: 14px; font-weight: 600;
+      opacity: 0; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none; white-space: nowrap; z-index: 1000;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,215,0,0.3);
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--gr); }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.5; }
+
+    .search-bar {
+      background: var(--d3); border-radius: 12px; padding: 12px 16px;
+      display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+    }
+    .search-bar input {
+      flex: 1; background: none; border: none; color: white; font-size: 15px; outline: none;
+    }
+    .search-bar input::placeholder { color: var(--gr2); }
+
+    .plan-cards { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 20px; }
+    .plan-card {
+      border-radius: 20px; padding: 20px; border: 1px solid;
+      position: relative; overflow: hidden;
+    }
+    .plan-card.individual { background: linear-gradient(135deg, #001a0a, #000f05); border-color: rgba(29,185,84,0.4); }
+    .plan-card.duo { background: linear-gradient(135deg, #001a2e, #000f1a); border-color: rgba(74,158,255,0.4); }
+    .plan-card.familiar { background: linear-gradient(135deg, #2a001a, #1a000f); border-color: rgba(233,30,99,0.4); }
+    .plan-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .plan-card-name { font-size: 18px; font-weight: 800; }
+    .plan-card-price { font-size: 22px; font-weight: 900; }
+    .plan-card-desc { font-size: 13px; color: var(--gr); margin-bottom: 12px; line-height: 1.4; }
+    .plan-card-features { list-style: none; }
+    .plan-card-features li { font-size: 13px; padding: 4px 0; display: flex; align-items: center; gap: 8px; }
+    .plan-card-features li::before { content: '✓'; color: var(--g); font-weight: 800; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="crown">👑</div>
+      <h1>Premium Admin</h1>
+      <p>Panel de gestión de suscripciones</p>
+    </div>
+    <input type="password" id="passwordInput" class="login-input" placeholder="Contraseña" autofocus>
+    <button class="login-btn" onclick="login()">Acceder</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<div id="mainContent">
+  <div class="admin-header">
+    <h1>👑 Streamify Premium</h1>
+    <button class="logout-btn" onclick="logout()">Salir</button>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="tab-btn active" onclick="switchTab('dashboard')">📊 Dashboard</button>
+    <button class="tab-btn" onclick="switchTab('users')">👥 Usuarios</button>
+    <button class="tab-btn" onclick="switchTab('canvas')">🎬 Canvas</button>
+    <button class="tab-btn" onclick="switchTab('planes')">💎 Planes</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="panel active" id="dashboardPanel">
+    <div class="stats-grid">
+      <div class="stat-card gold">
+        <div class="stat-icon">👑</div>
+        <div class="stat-value" id="totalPremium">0</div>
+        <div class="stat-label">Total Premium</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-icon">🎵</div>
+        <div class="stat-value" id="totalIndividual">0</div>
+        <div class="stat-label">Individual</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-icon">👫</div>
+        <div class="stat-value" id="totalDuo">0</div>
+        <div class="stat-label">Duo</div>
+      </div>
+      <div class="stat-card pink">
+        <div class="stat-icon">👨‍👩‍👧‍👦</div>
+        <div class="stat-value" id="totalFamiliar">0</div>
+        <div class="stat-label">Familiar</div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card" style="background:var(--d2);">
+        <div class="stat-icon">🎬</div>
+        <div class="stat-value" id="totalCanvas">0</div>
+        <div class="stat-label">Canvas subidos</div>
+      </div>
+      <div class="stat-card" style="background:var(--d2);">
+        <div class="stat-icon">👤</div>
+        <div class="stat-value" id="totalUsers">0</div>
+        <div class="stat-label">Usuarios totales</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">🆕 Últimos premium</span>
+    </div>
+    <div class="item-list" id="recentPremiumList">
+      <div class="empty-state"><div class="empty-icon">👑</div><div>Cargando...</div></div>
+    </div>
+  </div>
+
+  <!-- USUARIOS -->
+  <div class="panel" id="usersPanel">
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" placeholder="Buscar usuario..." id="userSearch" oninput="filterUsers(this.value)">
+    </div>
+
+    <!-- Agregar usuario premium manualmente -->
+    <div class="form-section">
+      <div class="form-title">➕ Asignar plan premium</div>
+      <div class="form-group">
+        <label class="form-label">Email del usuario *</label>
+        <input type="email" class="form-input" id="manualEmail" placeholder="usuario@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">UID de Firebase (opcional)</label>
+        <input type="text" class="form-input" id="manualUid" placeholder="Si no lo sabes déjalo vacío">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Plan *</label>
+        <select class="form-select" id="manualPlan">
+          <option value="individual">🎵 Individual — $5.99/mes</option>
+          <option value="duo">👫 Duo — $7.99/mes</option>
+          <option value="familiar">👨‍👩‍👧‍👦 Familiar — $10.99/mes</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha de vencimiento</label>
+        <input type="date" class="form-input" id="manualExpiry">
+      </div>
+      <button class="submit-btn" onclick="assignPlan()">💎 Asignar plan</button>
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">👥 Todos los usuarios</span>
+      <span class="count-badge" id="usersCount">0</span>
+    </div>
+    <div class="item-list" id="usersList">
+      <div class="empty-state"><div class="empty-icon">👥</div><div>Cargando usuarios...</div></div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="panel" id="canvasPanel">
+    <div class="form-section">
+      <div class="form-title">🎬 ¿Qué es Canvas?</div>
+      <p style="font-size:13px;color:var(--gr);line-height:1.6;">
+        Canvas es un video corto (3-8 segundos) en loop que se muestra en el reproductor al reproducir una canción, como Spotify. Solo usuarios <span style="color:var(--gold);font-weight:700;">Premium</span> pueden verlo. Pega el link del video (MP4, YouTube o Cloudinary) en cada canción.
+      </p>
+    </div>
+
+    <div class="search-bar">
+      <span>🔍</span>
+      <input type="text" placeholder="Buscar canción..." id="canvasSearch" oninput="filterCanvas(this.value)">
+    </div>
+
+    <div class="section-header">
+      <span class="section-title">🎵 Canciones</span>
+      <span class="count-badge" id="canvasCount">0</span>
+    </div>
+    <div class="item-list" id="canvasList">
+      <div class="empty-state"><div class="empty-icon">🎬</div><div>Cargando canciones...</div></div>
+    </div>
+  </div>
+
+  <!-- PLANES -->
+  <div class="panel" id="planesPanel">
+    <div class="plan-cards">
+      <div class="plan-card individual">
+        <div class="plan-card-header">
+          <div class="plan-card-name">🎵 Individual</div>
+          <div class="plan-card-price" style="color:var(--g);">$5.99<span style="font-size:13px;font-weight:400;">/mes</span></div>
+        </div>
+        <div class="plan-card-desc">Para 1 persona. Acceso completo a todas las funciones premium.</div>
+        <ul class="plan-card-features">
+          <li>Sin anuncios</li>
+          <li>Canvas en el reproductor</li>
+          <li>Descargas ilimitadas</li>
+          <li>Letras completas</li>
+          <li>Audio alta calidad</li>
+          <li>Modo aleatorio</li>
+          <li>Sin pausas automáticas</li>
+        </ul>
+      </div>
+
+      <div class="plan-card duo">
+        <div class="plan-card-header">
+          <div class="plan-card-name">👫 Duo</div>
+          <div class="plan-card-price" style="color:var(--duo);">$7.99<span style="font-size:13px;font-weight:400;">/mes</span></div>
+        </div>
+        <div class="plan-card-desc">Para 2 personas en la misma dirección. Todo lo del plan Individual.</div>
+        <ul class="plan-card-features">
+          <li>2 cuentas premium</li>
+          <li>Todo del plan Individual</li>
+          <li>Playlist compartida</li>
+          <li>Sesión simultánea</li>
+        </ul>
+      </div>
+
+      <div class="plan-card familiar">
+        <div class="plan-card-header">
+          <div class="plan-card-name">👨‍👩‍👧‍👦 Familiar</div>
+          <div class="plan-card-price" style="color:var(--fam);">$10.99<span style="font-size:13px;font-weight:400;">/mes</span></div>
+        </div>
+        <div class="plan-card-desc">Hasta 6 personas. La mejor opción para toda la familia.</div>
+        <ul class="plan-card-features">
+          <li>Hasta 6 cuentas premium</li>
+          <li>Todo del plan Duo</li>
+          <li>Playlist familiar</li>
+          <li>Control parental</li>
+          <li>Perfiles separados</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Editar precios -->
+    <div class="form-section">
+      <div class="form-title">💰 Configurar precios</div>
+      <div class="form-group">
+        <label class="form-label">Precio Individual ($/mes)</label>
+        <input type="number" class="form-input" id="priceIndividual" value="5.99" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Precio Duo ($/mes)</label>
+        <input type="number" class="form-input" id="priceDuo" value="7.99" step="0.01">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Precio Familiar ($/mes)</label>
+        <input type="number" class="form-input" id="priceFamiliar" value="10.99" step="0.01">
+      </div>
+      <button class="submit-btn" onclick="savePrices()">💾 Guardar precios</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const ADMIN_PASSWORD = 'Adrian2005@';
+  let allUsers = [];
+  let allSongs = [];
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (localStorage.getItem('premium_admin_logged') === 'true') {
+      showMain();
+    }
+  });
+
+  function login() {
+    const pw = document.getElementById('passwordInput').value;
+    if (pw === ADMIN_PASSWORD) {
+      localStorage.setItem('premium_admin_logged', 'true');
+      showMain();
+      showToast('✅ Bienvenido al panel Premium');
+    } else {
+      document.getElementById('loginError').textContent = 'Contraseña incorrecta';
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('premium_admin_logged');
+    location.reload();
+  }
+
+  function showMain() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('mainContent').classList.add('visible');
+    waitForFirebase();
+  }
+
+  function waitForFirebase() {
+    if (window.firebaseReady && window.FB && window.db) {
+      loadAllData();
+    } else {
+      setTimeout(waitForFirebase, 200);
+    }
+  }
+
+  async function loadAllData() {
+    await loadUsers();
+    await loadSongs();
+    updateDashboard();
+  }
+
+  async function loadUsers() {
+    try {
+      const { collection, getDocs } = window.FB;
+      const snap = await getDocs(collection(window.db, 'users'));
+      allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderUsers(allUsers);
+      document.getElementById('usersCount').textContent = allUsers.length;
+      document.getElementById('totalUsers').textContent = allUsers.length;
+    } catch (e) {
+      console.error('Error users:', e);
+    }
+  }
+
+  async function loadSongs() {
+    try {
+      const { collection, getDocs, query, orderBy } = window.FB;
+      const q = query(collection(window.db, 'songs'), orderBy('order', 'asc'));
+      const snap = await getDocs(q);
+      allSongs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderCanvas(allSongs);
+      document.getElementById('canvasCount').textContent = allSongs.length;
+    } catch (e) {
+      console.error('Error songs:', e);
+    }
+  }
+
+  function updateDashboard() {
+    const premium = allUsers.filter(u => u.plan && u.plan !== 'free');
+    const ind = allUsers.filter(u => u.plan === 'individual').length;
+    const duo = allUsers.filter(u => u.plan === 'duo').length;
+    const fam = allUsers.filter(u => u.plan === 'familiar').length;
+    const canvasCount = allSongs.filter(s => s.canvasUrl).length;
+
+    document.getElementById('totalPremium').textContent = premium.length;
+    document.getElementById('totalIndividual').textContent = ind;
+    document.getElementById('totalDuo').textContent = duo;
+    document.getElementById('totalFamiliar').textContent = fam;
+    document.getElementById('totalCanvas').textContent = canvasCount;
+
+    const recent = [...premium].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, 5);
+    const container = document.getElementById('recentPremiumList');
+    if (recent.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">👑</div><div>No hay usuarios premium aún</div></div>';
+    } else {
+      container.innerHTML = recent.map(u => `
+        <div class="list-item">
+          <div class="user-avatar">${(u.displayName || u.email || 'U')[0].toUpperCase()}</div>
+          <div class="user-info">
+            <div class="user-name">${u.displayName || 'Sin nombre'}</div>
+            <div class="user-email">${u.email || u.id}</div>
+          </div>
+          <span class="plan-badge ${u.plan}">${u.plan}</span>
+        </div>
+      `).join('');
+    }
+  }
+
+  function renderUsers(users) {
+    const container = document.getElementById('usersList');
+    if (users.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div>No hay usuarios registrados</div></div>';
+      return;
+    }
+    container.innerHTML = users.map(u => `
+      <div class="list-item">
+        <div class="user-avatar" style="background:linear-gradient(135deg,${getPlanColor(u.plan)},#000);">
+          ${(u.displayName || u.email || 'U')[0].toUpperCase()}
+        </div>
+        <div class="user-info">
+          <div class="user-name">${u.displayName || 'Sin nombre'}</div>
+          <div class="user-email">${u.email || u.id}</div>
+          <div class="user-meta">Descargas: ${u.monthlyDownloads || 0}/mes</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <span class="plan-badge ${u.plan || 'free'}">${u.plan || 'free'}</span>
+          <select class="plan-select-mini" onchange="changePlan('${u.id}', this.value)">
+            <option value="free" ${(!u.plan || u.plan === 'free') ? 'selected' : ''}>Free</option>
+            <option value="individual" ${u.plan === 'individual' ? 'selected' : ''}>Individual</option>
+            <option value="duo" ${u.plan === 'duo' ? 'selected' : ''}>Duo</option>
+            <option value="familiar" ${u.plan === 'familiar' ? 'selected' : ''}>Familiar</option>
+          </select>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderCanvas(songs) {
+    const container = document.getElementById('canvasList');
+    if (songs.length === 0) {
+      container.innerHTML = '<div class="empty-state"><div class="empty-icon">🎬</div><div>No hay canciones</div></div>';
+      return;
+    }
+    container.innerHTML = songs.map(s => `
+      <div class="song-canvas-item">
+        <div class="song-canvas-top">
+          <div class="song-thumb">
+            ${s.coverUrl ? `<img src="${s.coverUrl}" alt="${s.title}">` : '🎵'}
+          </div>
+          <div class="song-info">
+            <div class="song-title">${s.title}</div>
+            <div class="song-artist">${s.artist || 'Desconocido'}</div>
+          </div>
+          <span class="canvas-status ${s.canvasUrl ? 'has' : 'none'}">${s.canvasUrl ? '🎬 Tiene video' : 'Sin video'}</span>
+        </div>
+        <div class="canvas-url-row">
+          <input type="url" class="canvas-url-input" id="canvas_${s.id}"
+            value="${s.canvasUrl || ''}" placeholder="https://... pega link del video MP4">
+          <button class="canvas-save-btn" onclick="saveCanvas('${s.id}')">Guardar</button>
+        </div>
+        ${s.canvasUrl ? `<video src="${s.canvasUrl}" style="width:100%;border-radius:10px;max-height:120px;object-fit:cover;" muted loop playsinline autoplay></video>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function filterUsers(val) {
+    val = val.toLowerCase();
+    const filtered = allUsers.filter(u =>
+      (u.displayName || '').toLowerCase().includes(val) ||
+      (u.email || '').toLowerCase().includes(val)
+    );
+    renderUsers(filtered);
+  }
+
+  function filterCanvas(val) {
+    val = val.toLowerCase();
+    const filtered = allSongs.filter(s =>
+      s.title?.toLowerCase().includes(val) ||
+      s.artist?.toLowerCase().includes(val)
+    );
+    renderCanvas(filtered);
+  }
+
+  async function changePlan(uid, plan) {
+    try {
+      const { doc, updateDoc } = window.FB;
+      await updateDoc(doc(window.db, 'users', uid), {
+        plan,
+        updatedAt: Date.now()
+      });
+      const user = allUsers.find(u => u.id === uid);
+      if (user) user.plan = plan;
+      updateDashboard();
+      showToast(`✅ Plan actualizado a ${plan}`);
+    } catch (e) {
+      showToast('❌ Error: ' + e.message);
+    }
+  }
+
+  async function assignPlan() {
+    const email = document.getElementById('manualEmail').value.trim();
+    const uid = document.getElementById('manualUid').value.trim();
+    const plan = document.getElementById('manualPlan').value;
+    const expiry = document.getElementById('manualExpiry').value;
+
+    if (!email) { showToast('❌ Escribe el email'); return; }
+
+    const docId = uid || email.replace(/[^a-zA-Z0-9]/g, '_');
+
+    try {
+      const { doc, setDoc } = window.FB;
+      await setDoc(doc(window.db, 'users', docId), {
+        email, plan,
+        expiryDate: expiry || null,
+        updatedAt: Date.now(),
+        monthlyDownloads: 0
+      }, { merge: true });
+
+      showToast(`✅ Plan ${plan} asignado a ${email}`);
+      document.getElementById('manualEmail').value = '';
+      document.getElementById('manualUid').value = '';
+      await loadUsers();
+      updateDashboard();
+    } catch (e) {
+      showToast('❌ Error: ' + e.message);
+    }
+  }
+
+  async function saveCanvas(songId) {
+    const url = document.getElementById('canvas_' + songId).value.trim();
+    try {
+      const { doc, updateDoc } = window.FB;
+      await updateDoc(doc(window.db, 'songs', songId), { canvasUrl: url });
+      const song = allSongs.find(s => s.id === songId);
+      if (song) song.canvasUrl = url;
+      showToast(url ? '✅ Video Canvas guardado' : '✅ Video eliminado');
+      renderCanvas(allSongs);
+    } catch (e) {
+      showToast('❌ Error: ' + e.message);
+    }
+  }
+
+  async function savePrices() {
+    const prices = {
+      individual: parseFloat(document.getElementById('priceIndividual').value),
+      duo: parseFloat(document.getElementById('priceDuo').value),
+      familiar: parseFloat(document.getElementById('priceFamiliar').value)
+    };
+    try {
+      const { doc, setDoc } = window.FB;
+      await setDoc(doc(window.db, 'config', 'prices'), prices, { merge: true });
+      showToast('✅ Precios guardados');
+    } catch (e) {
+      showToast('❌ Error: ' + e.message);
+    }
+  }
+
+  function getPlanColor(plan) {
+    if (plan === 'individual') return '#1DB954';
+    if (plan === 'duo') return '#4a9eff';
+    if (plan === 'familiar') return '#e91e63';
+    return '#282828';
+  }
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById(tabId + 'Panel').classList.add('active');
+  }
+
+  let toastTmr;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(toastTmr);
+    toastTmr = setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
