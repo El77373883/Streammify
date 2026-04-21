@@ -1954,16 +1954,20 @@ function showFullAd() {
     </div>
   </div>
 
-  <!-- PANEL CUENTAS -->
+    <!-- PANEL CUENTAS -->
   <div id="panelCuentas" style="padding:16px 20px;display:none;">
-    <h4 style="font-size:13px;color:#999;margin-bottom:12px;letter-spacing:0.5px;">CUENTAS GUARDADAS</h4>
-    <div id="savedAccountsList"></div>
-    <button onclick="addNewAccount()" style="width:100%;margin-top:12px;background:#282828;border:1px dashed #444;color:white;border-radius:14px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:inherit;">
-      <span style="font-size:20px;">+</span> Agregar otra cuenta
-    </button>
-    <p style="font-size:12px;color:#666;text-align:center;margin-top:10px;">Las cuentas FREE son gratuitas</p>
+    <h4 style="font-size:13px;color:#999;margin-bottom:12px;letter-spacing:0.5px;">COMPARTIR MI CUENTA</h4>
+    <p style="font-size:13px;color:#666;margin-bottom:16px;line-height:1.5;">Agrega a un familiar, amigo o pareja para que usen tu cuenta gratis.</p>
+    <div style="background:#282828;border-radius:16px;padding:16px;margin-bottom:16px;">
+      <input id="newAccountName" type="text" placeholder="Nombre (opcional)" style="width:100%;background:#1a1a1a;color:white;border:none;border-radius:10px;padding:12px 14px;font-size:14px;outline:none;font-family:inherit;margin-bottom:10px;">
+      <input id="newAccountEmail" type="email" placeholder="Correo electrónico *" style="width:100%;background:#1a1a1a;color:white;border:none;border-radius:10px;padding:12px 14px;font-size:14px;outline:none;font-family:inherit;margin-bottom:12px;">
+      <button onclick="agregarCuentaCompartida()" style="width:100%;background:#1db954;border:none;color:black;border-radius:20px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">✓ Agregar cuenta</button>
+    </div>
+    <h4 style="font-size:13px;color:#999;margin-bottom:12px;letter-spacing:0.5px;">CON QUIÉN COMPARTÍS</h4>
+    <div id="sharedAccountsList"></div>
   </div>
 </div>
+
 
 <style>
 .friend-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);}
@@ -2096,7 +2100,64 @@ function removeFriend(uid) {
   toast('Amigo eliminado');
 }
 
-// ===== CUENTAS =====
+// ===== CUENTAS COMPARTIDAS =====
+let sharedAccounts = JSON.parse(localStorage.getItem('sharedAccounts') || '[]');
+
+function agregarCuentaCompartida() {
+  const nombre = document.getElementById('newAccountName').value.trim();
+  const email = document.getElementById('newAccountEmail').value.trim();
+  if (!email) { toast('❌ El correo es obligatorio'); return; }
+  if (!email.includes('@')) { toast('❌ Correo inválido'); return; }
+  if (sharedAccounts.find(a => a.email === email)) { toast('⚠️ Ya está agregada'); return; }
+  if (sharedAccounts.length >= 5) { toast('❌ Máximo 5 cuentas'); return; }
+  const colors = ['#1db954','#e91e63','#9c27b0','#2196f3','#ff5722'];
+  sharedAccounts.push({
+    id: Date.now(),
+    nombre: nombre || email.split('@')[0],
+    email,
+    color: colors[sharedAccounts.length % colors.length],
+    fecha: new Date().toLocaleDateString('es')
+  });
+  localStorage.setItem('sharedAccounts', JSON.stringify(sharedAccounts));
+  document.getElementById('newAccountName').value = '';
+  document.getElementById('newAccountEmail').value = '';
+  toast('✅ Cuenta agregada');
+  renderSharedAccounts();
+}
+
+function renderSharedAccounts() {
+  const list = document.getElementById('sharedAccountsList');
+  if (!list) return;
+  if (!sharedAccounts.length) {
+    list.innerHTML = '<div style="color:#666;font-size:13px;text-align:center;padding:12px 0;">Aún no compartiste con nadie</div>';
+    return;
+  }
+  list.innerHTML = '';
+  sharedAccounts.forEach(acc => {
+    const d = document.createElement('div');
+    d.style.cssText = 'display:flex;align-items:center;gap:12px;padding:12px 14px;background:#282828;border-radius:14px;margin-bottom:8px;';
+    d.innerHTML = `
+      <div style="width:46px;height:46px;border-radius:50%;background:${acc.color};display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:white;flex-shrink:0;">${acc.nombre[0].toUpperCase()}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:14px;font-weight:600;">${acc.nombre}</div>
+        <div style="font-size:12px;color:#999;margin-top:2px;">${acc.email}</div>
+        <div style="font-size:11px;color:#555;margin-top:2px;">Agregado el ${acc.fecha}</div>
+      </div>
+      <button onclick="eliminarCuentaCompartida(${acc.id})" style="background:transparent;border:1px solid #444;color:#999;border-radius:20px;padding:7px 12px;font-size:12px;cursor:pointer;">Quitar</button>
+    `;
+    list.appendChild(d);
+  });
+}
+
+function eliminarCuentaCompartida(id) {
+  sharedAccounts = sharedAccounts.filter(a => a.id !== id);
+  localStorage.setItem('sharedAccounts', JSON.stringify(sharedAccounts));
+  renderSharedAccounts();
+  toast('Cuenta eliminada');
+}
+
+function loadSavedAccounts() { renderSharedAccounts(); }
+
 function saveCurrentAccount() {
   const user = window.auth?.currentUser;
   if (!user) return;
