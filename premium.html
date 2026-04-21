@@ -483,6 +483,13 @@ max-width: 75%;
 .premium-popup-box .pp-close{width:100%;background:transparent;border:1px solid var(--d4);border-radius:30px;padding:12px;color:var(--gr);font-size:14px;cursor:pointer;}
 
 
+#fp.canvas-mode .fpcover{position:fixed;inset:0;z-index:0;padding:0;}
+#fp.canvas-mode .fpcvwrap{border-radius:0;width:100%;height:100vh;}
+#fp.canvas-mode{background:transparent!important;}
+#fp.canvas-mode::before{content:'';position:fixed;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.3) 0%,rgba(0,0,0,0.1) 40%,rgba(0,0,0,0.7) 70%,rgba(0,0,0,0.95) 100%);pointer-events:none;}
+#fp.canvas-mode .fphd,#fp.canvas-mode .fpmeta,#fp.canvas-mode .fpprog,#fp.canvas-mode .fpctrls,#fp.canvas-mode .fpex,#fp.canvas-mode .lyrics-container{position:relative;z-index:10;}
+
+
 </style>
 </head>
 <body>
@@ -1101,7 +1108,8 @@ async function loadFirestoreSongs() {
         coverUrl: data.coverUrl || null,
         lyrics: data.lyrics || '',
         duration: data.duration || 180,
-        featured: data.featured || false
+        featured: data.featured || false,
+        canvasUrl: data.canvasUrl || null
       };
     });
     
@@ -1528,14 +1536,30 @@ function playTrack(idx){
   document.getElementById('pTitle').textContent=t.title;
   document.getElementById('pArtist').textContent=t.artist;
   
-  const fc=document.getElementById('fpCover');fc.innerHTML='';
+const fc=document.getElementById('fpCover');fc.innerHTML='';
+if (t.canvasUrl) {
+  const vid = document.createElement('video');
+  vid.src = t.canvasUrl;
+  vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
+  vid.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+  document.getElementById('fp').classList.add('canvas-mode');
+  document.getElementById('fpCoverWrap').style.cssText = 'position:fixed;inset:0;z-index:0;border-radius:0;padding:0;';
+  fc.appendChild(vid);
+} else {
+  document.getElementById('fp').classList.remove('canvas-mode');
+  document.getElementById('fpCoverWrap').style.cssText = '';
   fc.appendChild(getImageOrCover(t, 600, false));
+}
   document.getElementById('fpTitle').textContent=t.title;
   document.getElementById('fpArtist').textContent=t.artist;
   
   const palIdx = t.pal || 0;
   const [a]=PAL[palIdx%PAL.length];
+  if (!t.canvasUrl) {
   document.getElementById('fp').style.background=`linear-gradient(180deg,${a} 0%,#121212 55%)`;
+} else {
+  document.getElementById('fp').style.background='transparent';
+}
   document.getElementById('player').classList.add('show');
   // Botón descarga en el reproductor fullscreen
 document.getElementById('fpDownloadBtn').onclick = () => guardarParaOffline(T[curIdx]);
