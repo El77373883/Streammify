@@ -487,8 +487,9 @@ max-width: 75%;
   background: transparent !important;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
+  justify-content: flex-start; /* He cambiado justify-content para controlar mejor el inicio */
+  overflow: visible; /* Cambiado a visible para evitar cortes si algo se desborda un poco */
+  height: 100dvh; /* Aseguramos que el contenedor principal ocupe toda la pantalla */
 }
 
 #fp.canvas-mode .fpcover {
@@ -501,12 +502,13 @@ max-width: 75%;
 #fp.canvas-mode .fpcvwrap {
   border-radius: 0;
   width: 100%;
-  /* Mantiene el tamaño exacto de la pantalla actual */
-  height: 100dvh; 
+  height: 100dvh; /* Altura dinámica para dispositivos móviles */
   position: relative;
+  display: flex; /* Añadimos flex aquí también */
+  flex-direction: column; /* Apilado vertical */
+  overflow: hidden; /* Mantenemos el overflow: hidden aquí para el contenido interno */
 }
 
-/* El gradiente que da el look cinematográfico */
 #fp.canvas-mode::before {
   content: '';
   position: fixed;
@@ -525,7 +527,7 @@ max-width: 75%;
   padding: 0 20px;
   background: rgba(0,0,0,0.5);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px); /* Para soporte en Safari */
+  -webkit-backdrop-filter: blur(10px); /* Para soporte en Safari/iPhone */
 }
 
 #fp.canvas-mode .fpmeta,
@@ -538,9 +540,16 @@ max-width: 75%;
   margin-top: 0;
 }
 
+/* Modificación de este selector para forzar el anclaje inferior */
 #fp.canvas-mode .fphd ~ *:not(.fpcover) {
-  margin-top: auto;
+  margin-top: 0; /* Reiniciamos el margen auto anterior */
 }
+
+/* Forzar que los elementos inferiores se alineen al final */
+#fp.canvas-mode .fpmeta {
+    margin-top: auto; /* El primer elemento de los inferiores empuja todo el resto hacia abajo */
+}
+
 
 
 
