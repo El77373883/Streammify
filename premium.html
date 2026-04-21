@@ -488,7 +488,8 @@ max-width: 75%;
   background: #000 !important;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  position: fixed;
+  inset: 0;
 }
 
 #fp.canvas-mode .fpcover {
@@ -514,34 +515,22 @@ max-width: 75%;
   object-fit: cover;
 }
 
-/* Capa de gradiente encima del video para que los controles se lean bien */
+/* Capa de gradiente encima del video */
 #fp.canvas-mode::after {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 2;
   background: linear-gradient(to bottom, 
-    rgba(0,0,0,0.4) 0%, 
-    rgba(0,0,0,0) 30%,
-    rgba(0,0,0,0) 60%,
-    rgba(0,0,0,0.7) 85%, 
+    rgba(0,0,0,0.5) 0%, 
+    rgba(0,0,0,0) 25%,
+    rgba(0,0,0,0) 70%,
+    rgba(0,0,0,0.8) 90%, 
     rgba(0,0,0,0.95) 100%);
   pointer-events: none;
 }
 
-/* Todos los controles van por ENCIMA del video */
-#fp.canvas-mode .fphd,
-#fp.canvas-mode .fpmeta,
-#fp.canvas-mode .lyrics-container,
-#fp.canvas-mode .fpprog,
-#fp.canvas-mode .fpctrls,
-#fp.canvas-mode .fpex {
-  position: relative;
-  z-index: 10;
-  background: transparent;
-}
-
-/* El header se mantiene arriba */
+/* Header arriba */
 #fp.canvas-mode .fphd {
   position: absolute;
   top: calc(var(--st) + 8px);
@@ -550,19 +539,39 @@ max-width: 75%;
   z-index: 20;
   padding: 0 20px;
   background: transparent;
-  backdrop-filter: none;
 }
 
-/* Los controles de abajo se anclan al fondo */
+/* CONTENEDOR PRINCIPAL QUE EMPUJA TODO HACIA ABAJO */
+#fp.canvas-mode .fpmeta,
+#fp.canvas-mode .lyrics-container,
+#fp.canvas-mode .fpprog,
+#fp.canvas-mode .fpctrls,
+#fp.canvas-mode .fpex {
+  position: relative;
+  z-index: 10;
+  background: transparent;
+  margin-top: auto !important;
+}
+
+/* La metadata (título, artista, corazón) va arriba del margen automático */
+#fp.canvas-mode .fpmeta {
+  margin-top: auto !important;
+  margin-bottom: 0 !important;
+  padding-top: 60vh !important; /* Esto empuja el contenido hacia abajo */
+}
+
+/* Ajustes específicos */
+#fp.canvas-mode .fpprog {
+  padding: 16px 24px 0;
+}
+
 #fp.canvas-mode .fpctrls {
-  margin-top: auto;
-  padding-bottom: 20px;
+  padding: 16px 28px 8px;
 }
 
 #fp.canvas-mode .fpex {
-  padding-bottom: 40px;
+  padding: 0 24px 20px;
 }
-
 
 </style>
 </head>
