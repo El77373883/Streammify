@@ -487,13 +487,13 @@ max-width: 75%;
   background: #000 !important;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Empuja controles al fondo */
+  justify-content: flex-end; /* Empuja todo hacia la base */
   height: 100dvh;
   overflow: hidden;
-  padding-bottom: 50px;
+  padding-bottom: 25px;
 }
 
-/* EL VIDEO: Se queda fijo al fondo */
+/* EL VIDEO: Pantalla completa real */
 #fp.canvas-mode .fpcover {
   position: fixed;
   inset: 0;
@@ -505,56 +505,41 @@ max-width: 75%;
 #fp.canvas-mode video {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Para que el video llene la pantalla */
+  object-fit: cover; /* Llena toda la pantalla sin bordes negros */
 }
 
-/* LA SOMBRA: Para que el texto se vea sobre el video */
+/* SOMBRA: Oscurece la base para que el texto sea blanco y se lea bien */
 #fp.canvas-mode::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to bottom, 
-    rgba(0,0,0,0.4) 0%, 
-    transparent 40%, 
-    rgba(0,0,0,0.8) 85%, 
-    rgba(0,0,0,1) 100%);
+  background: linear-gradient(to top, #000 15%, rgba(0,0,0,0.5) 40%, transparent 70%);
   pointer-events: none;
 }
 
-/* EL TITULO Y ARTISTA: Subimos su margen para que no tape el centro */
-#fp.canvas-mode .fpmeta {
+/* CONTROLES: Bajamos todo al área oscura */
+#fp.canvas-mode .fpmeta,
+#fp.canvas-mode .fpprog,
+#fp.canvas-mode .fpctrls,
+#fp.canvas-mode .fpex,
+#fp.canvas-mode .lyrics-container {
   position: relative;
   z-index: 10;
-  padding: 0 25px;
-  margin-bottom: 20px; /* Separación del progreso */
+  margin: 0 !important; /* Quitamos el margin-top: auto */
+  padding: 10px 25px;   /* Espaciado interno */
 }
 
-/* LA BARRA DE PROGRESO */
-#fp.canvas-mode .fpprog {
-  position: relative;
-  z-index: 10;
-  padding: 0 20px;
-  margin-bottom: 25px; /* Separación de botones */
+/* Ajuste específico para el Header (botón bajar y compartir) */
+#fp.canvas-mode .fphd {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 40px 20px 20px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
 }
-
-/* BOTONES DE CONTROL */
-#fp.canvas-mode .fpctrls {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-/* OPCIONES EXTRA (Descargar, Dispositivos) */
-#fp.canvas-mode .fpex {
-  position: relative;
-  z-index: 10;
-  margin-top: 10px;
-}
-
 
 
 
