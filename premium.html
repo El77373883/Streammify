@@ -1575,6 +1575,7 @@ addToHistory(idx);
 addToStats(idx);
 updateFavIcon();
 showLyrics(t.title);
+} // <--- ¡FALTA ESTA LLAVE! CIERRA playTrack
 
 function togglePlay(){
   if(!T[curIdx]){playTrack(0);return;}
@@ -1895,7 +1896,8 @@ if (localStorage.getItem('theme') === 'light') {
   document.body.classList.add('light-mode');
 }
 
-// Exponer funciones (asegurar que estén definidas primero)
+// ===== EXPONER FUNCIONES GLOBALES =====
+// Primero definirlas si no existen
 function openProfile() {
   calcularEstadisticas();
   loadUserProfile();
@@ -1906,12 +1908,42 @@ function openProfile() {
   document.body.style.width = '100%';
 }
 
+function closeProfile() {
+  document.getElementById('profileModal').classList.remove('open');
+  document.getElementById('profileOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('light-mode');
+  const isLight = document.body.classList.contains('light-mode');
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
+function setAudioQuality(quality) {
+  localStorage.setItem('audioQuality', quality);
+  toast('Calidad: ' + quality);
+}
+
+async function doLogout() {
+  const auth = window.auth;
+  if (auth) {
+    await auth.signOut();
+    window.location.href = 'login.html';
+  }
+}
+
+// Ahora exponerlas
 window.openProfile = openProfile;
 window.closeProfile = closeProfile;
 window.goPage = goPage;
 window.toggleTheme = toggleTheme;
 window.setAudioQuality = setAudioQuality;
 window.doLogout = doLogout;
+
+
 </script>
 
 <!-- Eruda para debug -->
