@@ -512,8 +512,8 @@ max-width: 75%;
 #fp.canvas-mode .fpcvwrap video {
   width: 100%;
   height: 100%;
-  object-fit: contain; /* <- Se verá completo, sin recortes */
-  background: #000;    /* <- Fondo negro para los bordes sobrantes */
+  object-fit: cover;
+  object-position: center center; /* Ajusta esto según necesites */
 }
 
 /* Capa de gradiente encima del video */
