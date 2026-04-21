@@ -483,69 +483,86 @@ max-width: 75%;
 .premium-popup-box .pp-close{width:100%;background:transparent;border:1px solid var(--d4);border-radius:30px;padding:12px;color:var(--gr);font-size:14px;cursor:pointer;}
 
 
+/* CONTENEDOR GENERAL PARA VIDEO (PREMIUM) */
 #fp.canvas-mode {
   background: #000 !important;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Empuja todo hacia la base */
+  justify-content: flex-end; 
   height: 100dvh;
   overflow: hidden;
-  padding-bottom: 25px;
+  padding-bottom: 40px; /* Espacio para que no pegue al borde del iPhone */
 }
 
-/* EL VIDEO: Pantalla completa real */
+/* EL VIDEO (SOLO PREMIUM): Se va al fondo total */
 #fp.canvas-mode .fpcover {
-  position: fixed;
+  position: fixed; 
   inset: 0;
   z-index: 0;
   padding: 0;
 }
 
-#fp.canvas-mode .fpcvwrap, 
-#fp.canvas-mode video {
+#fp.canvas-mode video, 
+#fp.canvas-mode canvas {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* Llena toda la pantalla sin bordes negros */
+  object-fit: cover; /* Video a pantalla completa */
 }
 
-/* SOMBRA: Oscurece la base para que el texto sea blanco y se lea bien */
+/* LA CAPA OSCURA: Para que el texto blanco resalte sobre el video */
 #fp.canvas-mode::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to top, #000 15%, rgba(0,0,0,0.5) 40%, transparent 70%);
+  background: linear-gradient(to top, 
+    #000 0%, 
+    rgba(0,0,0,0.8) 20%, 
+    transparent 60%);
   pointer-events: none;
 }
 
-/* CONTROLES: Bajamos todo con un margen superior grande para que salgan del centro */
+/* EL NOMBRE Y ARTISTA: Los bajamos para que no tapen el video */
 #fp.canvas-mode .fpmeta {
   position: relative;
   z-index: 10;
-  margin-top: 20vh !important; /* Esto empuja el título hacia abajo 20% de la pantalla */
   padding: 0 25px;
+  margin-top: 50vh !important; /* Empuja el texto hacia la mitad inferior */
+  margin-bottom: 15px;
 }
 
-#fp.canvas-mode .fpprog,
-#fp.canvas-mode .fpctrls,
-#fp.canvas-mode .fpex,
-#fp.canvas-mode .lyrics-container {
+/* BARRA DE PROGRESO Y TIEMPOS */
+#fp.canvas-mode .fpprog {
   position: relative;
   z-index: 10;
-  margin: 0 !important; 
-  padding: 10px 25px;
+  padding: 0 20px;
+  margin-bottom: 20px;
 }
 
-/* Ajuste específico para el Header */
+/* BOTONES DE REPRODUCCIÓN */
+#fp.canvas-mode .fpctrls {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 20px;
+}
+
+/* OPCIONES (DESCARGAR, COLA, ETC) */
+#fp.canvas-mode .fpex {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 10px;
+}
+
+/* HEADER (EL BOTÓN DE BAJAR EL REPRODUCTOR) */
 #fp.canvas-mode .fphd {
   position: fixed;
   top: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
   z-index: 100;
-  padding: 40px 20px 20px;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+  padding-top: 40px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
 }
+
 
 
 
