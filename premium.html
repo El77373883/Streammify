@@ -488,7 +488,7 @@ max-width: 75%;
   background: #000 !important;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Esto empuja los controles hacia abajo */
+  justify-content: flex-end;
 }
 
 #fp.canvas-mode .fpcover {
@@ -1527,44 +1527,54 @@ aud.play().catch(()=>{});
   document.getElementById('pTitle').textContent=t.title;
   document.getElementById('pArtist').textContent=t.artist;
   
-const fc=document.getElementById('fpCover');fc.innerHTML='';
+const fc = document.getElementById('fpCover');
+fc.innerHTML = '';
+const fp = document.getElementById('fp');
+
 if (t.canvasUrl) {
+  fp.classList.add('canvas-mode');
   const vid = document.createElement('video');
   vid.src = t.canvasUrl;
-  vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
-vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000;';
-  document.getElementById('fp').classList.add('canvas-mode');
+  vid.autoplay = true;
+  vid.loop = true;
+  vid.muted = true;
+  vid.playsInline = true;
+  // CAMBIO CLAVE: object-fit: cover
+  vid.style.cssText = 'width:100%;height:100%;object-fit:cover;';
   fc.appendChild(vid);
 } else {
-  document.getElementById('fp').classList.remove('canvas-mode');
-  document.getElementById('fpCoverWrap').style.cssText = '';
+  fp.classList.remove('canvas-mode');
   fc.appendChild(getImageOrCover(t, 600, false));
 }
-  document.getElementById('fpTitle').textContent=t.title;
-  document.getElementById('fpArtist').textContent=t.artist;
-  
-  const palIdx = t.pal || 0;
-  const [a]=PAL[palIdx%PAL.length];
-  if (!t.canvasUrl) {
-  document.getElementById('fp').style.background=`linear-gradient(180deg,${a} 0%,#121212 55%)`;
+
+document.getElementById('fpTitle').textContent = t.title;
+document.getElementById('fpArtist').textContent = t.artist;
+
+const palIdx = t.pal || 0;
+const [a] = PAL[palIdx % PAL.length];
+if (!t.canvasUrl) {
+  document.getElementById('fp').style.background = `linear-gradient(180deg,${a} 0%,#121212 55%)`;
 } else {
-  document.getElementById('fp').style.background='transparent';
+  document.getElementById('fp').style.background = 'transparent';
 }
-  document.getElementById('player').classList.add('show');
-  // Botón descarga en el reproductor fullscreen
+
+document.getElementById('player').classList.add('show');
+// Botón descarga en el reproductor fullscreen
 document.getElementById('fpDownloadBtn').onclick = () => guardarParaOffline(T[curIdx]);
-  document.querySelectorAll('.titem').forEach(el => el.classList.remove('now'));
-const cur = document.getElementById('titem_'+idx);
-if(cur) cur.classList.add('now');
-document.querySelectorAll('.playing-bars').forEach(el => el.style.display='none');
-const bars = document.getElementById('bars_'+idx);
-if(bars) bars.style.display='flex';
-  updateIcons();
-  addToHistory(idx);
-  addToStats(idx);
-  updateFavIcon();
-  showLyrics(t.title);
-}
+
+document.querySelectorAll('.titem').forEach(el => el.classList.remove('now'));
+const cur = document.getElementById('titem_' + idx);
+if (cur) cur.classList.add('now');
+
+document.querySelectorAll('.playing-bars').forEach(el => el.style.display = 'none');
+const bars = document.getElementById('bars_' + idx);
+if (bars) bars.style.display = 'flex';
+
+updateIcons();
+addToHistory(idx);
+addToStats(idx);
+updateFavIcon();
+showLyrics(t.title);
 
 function togglePlay(){
   if(!T[curIdx]){playTrack(0);return;}
