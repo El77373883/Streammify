@@ -1465,7 +1465,7 @@ if (t.canvasUrl) {
   const vid = document.createElement('video');
   vid.src = t.canvasUrl;
   vid.autoplay = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
-  vid.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+vid.style.cssText = 'width:100%;height:100%;object-fit:contain;background:#000;';
   document.getElementById('fp').classList.add('canvas-mode');
   fc.appendChild(vid);
 } else {
