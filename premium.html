@@ -1528,7 +1528,9 @@ function playPLAll(){if(curPL&&curPL.tids.length)playTrack(curPL.tids[0]);}
 function playTrack(idx){
   if (!T[idx]) return;
   curIdx=idx;const t=T[idx];
-  aud.src=t.src;aud.load();aud.play().catch(()=>{});
+  aud.src=t.src;aud.load();
+if(audioCtx && audioCtx.state==='suspended') audioCtx.resume();
+aud.play().catch(()=>{});
   playing=true;
   
   const pi=document.getElementById('pImg');pi.innerHTML='';
