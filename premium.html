@@ -487,16 +487,19 @@ max-width: 75%;
   background: #000 !important;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; 
+  justify-content: flex-end; /* Empuja los textos a la parte de abajo */
   height: 100dvh;
   overflow: hidden;
-  padding-bottom: 20px;
+  padding-bottom: 50px; /* Espacio para que los botones no toquen el borde */
 }
 
-/* 1. EL VIDEO: Fondo total que no estorba al texto */
+/* EL VIDEO: Pantalla completa total (como el de Spotify) */
 #fp.canvas-mode .fpcover {
-  position: fixed !important;
-  inset: 0;
+  position: fixed !important; 
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100dvh;
   z-index: 0;
 }
 
@@ -504,26 +507,28 @@ max-width: 75%;
 #fp.canvas-mode canvas {
   width: 100% !important;
   height: 100% !important;
-  object-fit: cover !important;
+  object-fit: cover !important; /* Esto quita las barras negras y llena la pantalla */
 }
 
-/* 2. EL DEGRADADO: Para que el video se funda con el negro abajo */
+/* LA SOMBRA: Imprescindible para que el texto blanco se lea sobre el video */
 #fp.canvas-mode::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(to top, #000 25%, transparent 60%);
+  background: linear-gradient(to top, 
+    rgba(0,0,0,0.8) 0%, 
+    rgba(0,0,0,0.4) 30%, 
+    transparent 60%, 
+    rgba(0,0,0,0.4) 100%);
   pointer-events: none;
 }
 
-/* 3. LOS CONTROLES: Los alineamos perfectamente */
+/* LOS TEXTOS Y BOTONES: Flotando sobre el video en la parte baja */
 #fp.canvas-mode .fpmeta {
   position: relative;
   z-index: 10;
   padding: 0 25px;
-  /* El margen top "auto" junto con flex-end los mantendrá abajo */
-  margin-top: auto !important; 
   margin-bottom: 15px;
 }
 
@@ -531,29 +536,25 @@ max-width: 75%;
   position: relative;
   z-index: 10;
   padding: 0 20px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 #fp.canvas-mode .fpctrls {
   position: relative;
   z-index: 10;
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
 
-#fp.canvas-mode .fpex {
-  position: relative;
-  z-index: 10;
-  margin-bottom: 15px;
-}
-
-/* 4. EL HEADER: Botón de bajar */
+/* EL HEADER: El botón de bajar (v) y el título de arriba */
 #fp.canvas-mode .fphd {
   position: fixed;
   top: 0;
   width: 100%;
   z-index: 100;
-  padding-top: 40px;
+  padding: 45px 20px 20px;
+  background: transparent; /* Quitamos el fondo sólido para que se vea el video arriba */
 }
+
 
 
 
