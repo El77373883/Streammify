@@ -483,11 +483,31 @@ max-width: 75%;
 .premium-popup-box .pp-close{width:100%;background:transparent;border:1px solid var(--d4);border-radius:30px;padding:12px;color:var(--gr);font-size:14px;cursor:pointer;}
 
 
-#fp.canvas-mode{background:transparent!important;display:flex;flex-direction:column;justify-content:space-between;}
+#fp.canvas-mode {
+  background: transparent !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
 #fp.canvas-mode .fpcover{position:fixed;inset:0;z-index:0;padding:0;}
-#fp.canvas-mode .fpcvwrap{border-radius:0;width:100%;height:100vh;}
+#fp.canvas-mode .fpcvwrap {
+  border-radius:0;
+  width:100%;
+  height:100dvh; /* ✅ CORREGIDO */
+  position: relative; /* AÑADIDO */
+}
 #fp.canvas-mode::before{content:'';position:fixed;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.0) 30%,rgba(0,0,0,0.0) 50%,rgba(0,0,0,0.8) 75%,rgba(0,0,0,0.97) 100%);pointer-events:none;}
-#fp.canvas-mode .fphd{position:relative;z-index:10;}
+#fp.canvas-mode .fphd {
+  position: fixed;
+  top: calc(var(--st) + 16px); /* Ajuste con safe area */
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0 20px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+}
 #fp.canvas-mode .fpmeta,
 #fp.canvas-mode .fpprog,
 #fp.canvas-mode .fpctrls,
