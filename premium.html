@@ -484,116 +484,68 @@ max-width: 75%;
 
 
 #fp.canvas-mode {
-  background: black !important; /* Fondo negro base para evitar destellos blancos */
-  height: 100dvh !important;
+  background: #000 !important;
   display: flex !important;
   flex-direction: column !important;
+  height: 100dvh !important;
   overflow: hidden !important;
   position: relative !important;
 }
 
-/* 1. Imagen de Fondo (Cover) */
+/* El fondo */
 #fp.canvas-mode .fpcover {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100dvh !important; /* Usamos dvh para ajustar la altura real del móvil */
-  z-index: 1 !important; /* La base, todo lo demás va sobre esto */
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 0 !important;
 }
 
-/* 2. Gradiente (Para oscurecer la imagen y que se vea el texto) */
+/* El degradado para que se vea el texto */
 #fp.canvas-mode::before {
   content: '' !important;
-  position: absolute !important;
+  position: fixed !important;
   inset: 0 !important;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 75%, rgba(0,0,0,1) 100%) !important;
-  z-index: 2 !important; /* Sobre la imagen */
+  z-index: 1 !important;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 40%, rgba(0,0,0,0.8) 80%, #000 100%) !important;
   pointer-events: none !important;
 }
 
-/* 3. El Contenedor de Todo (Header + Controles) */
+/* EL CONTENEDOR MAESTRO */
 #fp.canvas-mode .fpcvwrap {
-  position: absolute !important;
-  top: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
-  height: 100dvh !important; /* Altura total */
-  z-index: 10 !important; /* Muy por encima de la imagen */
+  position: relative !important;
+  z-index: 5 !important;
+  height: 100% !important;
   display: flex !important;
   flex-direction: column !important;
-  justify-content: space-between !important; /* Ésta es la clave: header arriba, controles abajo */
-  overflow: hidden !important;
+  justify-content: space-between !important; /* EMPUJA TODO A LOS EXTREMOS */
   background: transparent !important;
-  border-radius: 0 !important;
 }
 
-/* 4. Cabecera (Reproduciendo ahora...) */
+/* La parte de arriba (Título: Reproduciendo ahora) */
 #fp.canvas-mode .fphd {
-  position: relative !important;
   width: 100% !important;
-  /* Espaciado superior dinámico (var(--st) o 20px si no existe) */
-  margin-top: calc(var(--st, 0px) + 20px) !important; 
-  padding: 10px 20px !important;
-  z-index: 20 !important;
-  display: flex !important;
-  flex-direction: column !important;
+  padding-top: calc(var(--st, 0px) + 20px) !important;
   background: transparent !important;
 }
 
-/* Forzar que el título 'Reproduciendo Ahora' esté alineado */
-#fp.canvas-mode .fphd * {
-  text-align: center;
-  color: white;
-}
-
-/* 5. Todo el bloque de Controles Inferiores (Título, Progreso, Botones) */
+/* LA MAGIA: Todo lo que no sea el header se va para abajo */
 #fp.canvas-mode .fphd ~ *:not(.fpcover) {
+  margin-top: auto !important; 
+}
+
+/* Ajuste de los botones para que no se amontonen */
+#fp.canvas-mode .fpmeta, 
+#fp.canvas-mode .fpprog, 
+#fp.canvas-mode .fpctrls, 
+#fp.canvas-mode .fpex {
   position: relative !important;
+  z-index: 10 !important;
   width: 100% !important;
-  margin-top: auto !important; /* Empuja este bloque al piso */
-  padding: 0 !important;
 }
 
-/* Aseguramos que la info (título canción), barra y controles bajen */
-#fp.canvas-mode .fpmeta,
-#fp.canvas-mode .fpprog,
-#fp.canvas-mode .fpctrls,
+/* Espacio extra abajo para que no choque con la barra del iPhone */
 #fp.canvas-mode .fpex {
-  position: relative !important;
-  z-index: 20 !important;
+  padding-bottom: calc(var(--sb, 0px) + 20px) !important;
 }
-
-/* Alineamos la barra de progreso */
-#fp.canvas-mode .fpprog {
-    margin-bottom: 10px !important;
-    padding: 0 20px !important;
-}
-
-/* Alineamos los botones de control (Play/Pause) */
-#fp.canvas-mode .fpctrls {
-    display: flex !important;
-    justify-content: space-around !important;
-    align-items: center !important;
-    padding: 10px 30px !important;
-}
-
-/* Ajuste del menú de navegación (Descargar, Dispositivos...) */
-#fp.canvas-mode .fpex {
-    display: flex !important;
-    justify-content: space-around !important;
-    padding: 15px 10px calc(var(--sb, 0px) + 15px) !important; /* var(--sb) es el safe area inferior del iPhone */
-}
-
-/* El bloque de Letra no disponible (lo ocultamos o lo movemos arriba) */
-#fp.canvas-mode .lyrics-container {
-    position: relative !important;
-    z-index: 10 !important;
-    height: 0 !important; /* Lo ocultamos visualmente de la zona de controles */
-    overflow: hidden !important;
-}
-
-
 
 
 
