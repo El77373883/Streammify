@@ -484,57 +484,75 @@ max-width: 75%;
 
 
 #fp.canvas-mode {
-  background: transparent !important;
+  background: #000 !important;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; 
+  justify-content: flex-end; /* Empuja controles al fondo */
   height: 100dvh;
   overflow: hidden;
-  padding-bottom: 50px; /* Espacio al borde inferior del iPhone */
+  padding-bottom: 50px;
 }
 
-#fp.canvas-mode .fpcover{position:fixed;inset:0;z-index:0;padding:0;}
-
-#fp.canvas-mode .fpcvwrap {
-  border-radius:0;
-  width:100%;
-  height:100dvh;
-  position: relative;
-}
-
-#fp.canvas-mode::before{content:'';position:fixed;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.0) 30%,rgba(0,0,0,0.0) 50%,rgba(0,0,0,0.8) 75%,rgba(0,0,0,0.97) 100%);pointer-events:none;}
-
-#fp.canvas-mode .fphd {
+/* EL VIDEO: Se queda fijo al fondo */
+#fp.canvas-mode .fpcover {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  padding: 40px 20px 20px; /* Bajamos un poco el header */
-  background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+  inset: 0;
+  z-index: 0;
+  padding: 0;
 }
 
-/* AQUÍ ESTÁ EL AJUSTE DE ESPACIOS */
+#fp.canvas-mode .fpcvwrap, 
+#fp.canvas-mode video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Para que el video llene la pantalla */
+}
+
+/* LA SOMBRA: Para que el texto se vea sobre el video */
+#fp.canvas-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to bottom, 
+    rgba(0,0,0,0.4) 0%, 
+    transparent 40%, 
+    rgba(0,0,0,0.8) 85%, 
+    rgba(0,0,0,1) 100%);
+  pointer-events: none;
+}
+
+/* EL TITULO Y ARTISTA: Subimos su margen para que no tape el centro */
 #fp.canvas-mode .fpmeta {
   position: relative;
   z-index: 10;
   padding: 0 25px;
-  margin-bottom: 25px; /* Separa título de la barra */
+  margin-bottom: 20px; /* Separación del progreso */
 }
 
+/* LA BARRA DE PROGRESO */
 #fp.canvas-mode .fpprog {
   position: relative;
   z-index: 10;
   padding: 0 20px;
-  margin-bottom: 30px; /* Separa la barra de los botones */
+  margin-bottom: 25px; /* Separación de botones */
 }
 
-#fp.canvas-mode .fpctrls,
-#fp.canvas-mode .fpex,
-#fp.canvas-mode .lyrics-container {
+/* BOTONES DE CONTROL */
+#fp.canvas-mode .fpctrls {
   position: relative;
   z-index: 10;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   margin-bottom: 20px;
+}
+
+/* OPCIONES EXTRA (Descargar, Dispositivos) */
+#fp.canvas-mode .fpex {
+  position: relative;
+  z-index: 10;
+  margin-top: 10px;
 }
 
 
