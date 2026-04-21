@@ -483,63 +483,91 @@ max-width: 75%;
 .premium-popup-box .pp-close{width:100%;background:transparent;border:1px solid var(--d4);border-radius:30px;padding:12px;color:var(--gr);font-size:14px;cursor:pointer;}
 
 
+/* EL CONTENEDOR RAIZ */
 #fp.canvas-mode {
-  background: transparent !important;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
+  background: #000 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100dvh !important; /* Altura dinámica real del móvil */
+  overflow: hidden !important;
+  position: relative !important;
 }
 
+/* EL VIDEO DE FONDO (CANVAS) */
 #fp.canvas-mode .fpcover {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  padding: 0;
+  position: absolute !important; /* Cambiado de fixed a absolute para que se quede dentro del padre */
+  inset: 0 !important;
+  z-index: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-#fp.canvas-mode .fpcvwrap {
-  border-radius: 0;
-  width: 100%;
-  /* Mantiene el tamaño exacto de la pantalla actual */
-  height: 100dvh; 
-  position: relative;
+#fp.canvas-mode .fpcover video,
+#fp.canvas-mode .fpcover img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important; /* Esto es vital para que el video llene el fondo como Spotify */
 }
 
-/* El gradiente que da el look cinematográfico */
+/* GRADIENTE SOBRE EL VIDEO */
 #fp.canvas-mode::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 75%, rgba(0,0,0,0.97) 100%);
-  pointer-events: none;
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 1 !important;
+  background: linear-gradient(to bottom, 
+    rgba(0,0,0,0.5) 0%, 
+    transparent 30%, 
+    transparent 50%, 
+    rgba(0,0,0,0.7) 75%, 
+    #000 100%) !important;
+  pointer-events: none !important;
 }
 
+/* ENVOLTORIO QUE SEPARA ARRIBA DE ABAJO */
+#fp.canvas-mode .fpcvwrap {
+  position: relative !important;
+  z-index: 10 !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important; /* EMPUJA EL HEADER ARRIBA Y CONTROLES ABAJO */
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+
+/* CABECERA (REPRODUCIENDO AHORA) */
 #fp.canvas-mode .fphd {
-  position: fixed;
-  top: calc(var(--st) + 16px);
-  left: 0;
-  right: 0;
-  z-index: 100;
-  padding: 0 20px;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px); /* Para soporte en Safari */
+  position: relative !important; /* NO USAR FIXED AQUÍ */
+  margin-top: calc(var(--st, 0px) + 16px) !important;
+  padding: 10px 20px !important;
+  z-index: 100 !important;
+  background: transparent !important;
+}
+
+/* BLOQUE DE CONTROLES INFERIORES */
+#fp.canvas-mode .fpmeta {
+  margin-top: auto !important; /* LA PIEZA CLAVE: Empuja todo el bloque hacia abajo */
 }
 
 #fp.canvas-mode .fpmeta,
 #fp.canvas-mode .fpprog,
 #fp.canvas-mode .fpctrls,
-#fp.canvas-mode .fpex,
-#fp.canvas-mode .lyrics-container {
-  position: relative;
-  z-index: 10;
-  margin-top: 0;
+#fp.canvas-mode .fpex {
+  position: relative !important;
+  z-index: 20 !important;
+  width: 100% !important;
+  background: transparent !important;
 }
 
-#fp.canvas-mode .fphd ~ *:not(.fpcover) {
-  margin-top: auto;
+/* AJUSTE PARA EL ÁREA INFERIOR DEL IPHONE */
+#fp.canvas-mode .fpex {
+  padding-bottom: calc(var(--sb, 0px) + 20px) !important;
+}
+
+/* EVITA QUE LAS LETRAS OCUPEN ESPACIO INNECESARIO */
+#fp.canvas-mode .lyrics-container {
+    display: none !important;
 }
 
 
