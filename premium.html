@@ -518,19 +518,25 @@ max-width: 75%;
   pointer-events: none;
 }
 
-/* CONTROLES: Bajamos todo al área oscura */
-#fp.canvas-mode .fpmeta,
+/* CONTROLES: Bajamos todo con un margen superior grande para que salgan del centro */
+#fp.canvas-mode .fpmeta {
+  position: relative;
+  z-index: 10;
+  margin-top: 20vh !important; /* Esto empuja el título hacia abajo 20% de la pantalla */
+  padding: 0 25px;
+}
+
 #fp.canvas-mode .fpprog,
 #fp.canvas-mode .fpctrls,
 #fp.canvas-mode .fpex,
 #fp.canvas-mode .lyrics-container {
   position: relative;
   z-index: 10;
-  margin: 0 !important; /* Quitamos el margin-top: auto */
-  padding: 10px 25px;   /* Espaciado interno */
+  margin: 0 !important; 
+  padding: 10px 25px;
 }
 
-/* Ajuste específico para el Header (botón bajar y compartir) */
+/* Ajuste específico para el Header */
 #fp.canvas-mode .fphd {
   position: fixed;
   top: 0;
@@ -540,6 +546,7 @@ max-width: 75%;
   padding: 40px 20px 20px;
   background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
 }
+
 
 
 
