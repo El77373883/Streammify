@@ -1895,16 +1895,23 @@ if (localStorage.getItem('theme') === 'light') {
   document.body.classList.add('light-mode');
 }
 
-// Exponer funciones
+// Exponer funciones (asegurar que estén definidas primero)
+function openProfile() {
+  calcularEstadisticas();
+  loadUserProfile();
+  document.getElementById('profileModal').classList.add('open');
+  document.getElementById('profileOverlay').classList.add('show');
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
+}
+
 window.openProfile = openProfile;
 window.closeProfile = closeProfile;
 window.goPage = goPage;
 window.toggleTheme = toggleTheme;
 window.setAudioQuality = setAudioQuality;
 window.doLogout = doLogout;
-document.getElementById('profileModal').addEventListener('touchmove', e => e.stopPropagation(), {passive:true});
-
-
 </script>
 
 <!-- Eruda para debug -->
