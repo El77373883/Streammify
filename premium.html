@@ -487,37 +487,54 @@ max-width: 75%;
   background: transparent !important;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end; /* Todo para abajo */
+  justify-content: flex-end; 
   height: 100dvh;
   overflow: hidden;
-  padding-bottom: 20px; /* Un pequeño margen abajo */
+  padding-bottom: 50px; /* Espacio al borde inferior del iPhone */
 }
+
 #fp.canvas-mode .fpcover{position:fixed;inset:0;z-index:0;padding:0;}
+
 #fp.canvas-mode .fpcvwrap {
   border-radius:0;
   width:100%;
-  height:100dvh; /* ✅ CORREGIDO */
-  position: relative; /* AÑADIDO */
+  height:100dvh;
+  position: relative;
 }
+
 #fp.canvas-mode::before{content:'';position:fixed;inset:0;z-index:1;background:linear-gradient(to bottom,rgba(0,0,0,0.5) 0%,rgba(0,0,0,0.0) 30%,rgba(0,0,0,0.0) 50%,rgba(0,0,0,0.8) 75%,rgba(0,0,0,0.97) 100%);pointer-events:none;}
+
 #fp.canvas-mode .fphd {
   position: fixed;
-  top: calc(var(--st) + 16px); /* Ajuste con safe area */
+  top: 0;
   left: 0;
   right: 0;
   z-index: 100;
-  padding: 0 20px;
-  background: rgba(0,0,0,0.5);
-  backdrop-filter: blur(10px);
+  padding: 40px 20px 20px; /* Bajamos un poco el header */
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
 }
-#fp.canvas-mode .fpmeta,
-#fp.canvas-mode .fpprog,
+
+/* AQUÍ ESTÁ EL AJUSTE DE ESPACIOS */
+#fp.canvas-mode .fpmeta {
+  position: relative;
+  z-index: 10;
+  padding: 0 25px;
+  margin-bottom: 25px; /* Separa título de la barra */
+}
+
+#fp.canvas-mode .fpprog {
+  position: relative;
+  z-index: 10;
+  padding: 0 20px;
+  margin-bottom: 30px; /* Separa la barra de los botones */
+}
+
 #fp.canvas-mode .fpctrls,
 #fp.canvas-mode .fpex,
 #fp.canvas-mode .lyrics-container {
   position: relative;
   z-index: 10;
-  margin-bottom: 15px; /* Esto les da aire entre sí */
+  margin-bottom: 20px;
 }
 
 
