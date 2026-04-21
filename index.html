@@ -2156,34 +2156,23 @@ function eliminarCuentaCompartida(id) {
   toast('Cuenta eliminada');
 }
 
-function loadSavedAccounts() { renderSharedAccounts(); }
-
-function saveCurrentAccount() {
-  const user = window.auth?.currentUser;
-  if (!user) return;
-  let accounts = JSON.parse(localStorage.getItem('savedAccounts') || '[]');
-  const exists = accounts.find(a => a.uid === user.uid);
-  if (!exists) {
-    accounts.push({
-      uid: user.uid,
-      name: user.displayName || user.email?.split('@')[0] || 'Usuario',
-      email: user.email || '',
-      photo: user.photoURL || null,
-      plan: 'free'
-    });
-    localStorage.setItem('savedAccounts', JSON.stringify(accounts));
+function loadSavedAccounts() {
+  const plan = currentUserData?.plan || 'free';
+  const panel = document.getElementById('panelCuentas');
+  if (plan === 'duo' || plan === 'familiar') {
+    renderSharedAccounts();
+  } else {
+    panel.innerHTML = `
+      <div style="text-align:center;padding:24px 16px;">
+        <div style="font-size:48px;margin-bottom:12px;">👨‍👩‍👧</div>
+        <div style="font-size:16px;font-weight:800;margin-bottom:8px;">Plan Duo o Familiar</div>
+        <div style="font-size:13px;color:#666;margin-bottom:20px;line-height:1.6;">Esta función es exclusiva para los planes <b style="color:white;">Duo</b> y <b style="color:white;">Familiar</b>. Compartí tu cuenta con hasta 5 personas.</div>
+        <button onclick="window.location.href='planes.html'" style="background:#1db954;border:none;color:black;border-radius:20px;padding:12px 28px;font-size:14px;font-weight:700;cursor:pointer;">Ver planes</button>
+      </div>
+    `;
   }
 }
 
-function loadSavedAccounts() {
-  const list = document.getElementById('savedAccountsList');
-  const accounts = JSON.parse(localStorage.getItem('savedAccounts') || '[]');
-  const currentUid = window.auth?.currentUser?.uid;
-
-  if (!accounts.length) {
-    list.innerHTML = '<div style="color:#666;font-size:13px;text-align:center;padding:12px 0;">No hay cuentas guardadas</div>';
-    return;
-  }
 
   list.innerHTML = '';
   accounts.forEach(acc => {
