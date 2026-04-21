@@ -484,68 +484,64 @@ max-width: 75%;
 
 
 #fp.canvas-mode {
-  background: #000 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  height: 100dvh !important;
-  overflow: hidden !important;
-  position: relative !important;
+  background: transparent !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
 }
 
-/* El fondo */
 #fp.canvas-mode .fpcover {
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 0 !important;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  padding: 0;
 }
 
-/* El degradado para que se vea el texto */
-#fp.canvas-mode::before {
-  content: '' !important;
-  position: fixed !important;
-  inset: 0 !important;
-  z-index: 1 !important;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 40%, rgba(0,0,0,0.8) 80%, #000 100%) !important;
-  pointer-events: none !important;
-}
-
-/* EL CONTENEDOR MAESTRO */
 #fp.canvas-mode .fpcvwrap {
-  position: relative !important;
-  z-index: 5 !important;
-  height: 100% !important;
-  display: flex !important;
-  flex-direction: column !important;
-  justify-content: space-between !important; /* EMPUJA TODO A LOS EXTREMOS */
-  background: transparent !important;
+  border-radius: 0;
+  width: 100%;
+  /* Mantiene el tamaño exacto de la pantalla actual */
+  height: 100dvh; 
+  position: relative;
 }
 
-/* La parte de arriba (Título: Reproduciendo ahora) */
+/* El gradiente que da el look cinematográfico */
+#fp.canvas-mode::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.8) 75%, rgba(0,0,0,0.97) 100%);
+  pointer-events: none;
+}
+
 #fp.canvas-mode .fphd {
-  width: 100% !important;
-  padding-top: calc(var(--st, 0px) + 20px) !important;
-  background: transparent !important;
+  position: fixed;
+  top: calc(var(--st) + 16px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 0 20px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Para soporte en Safari */
 }
 
-/* LA MAGIA: Todo lo que no sea el header se va para abajo */
+#fp.canvas-mode .fpmeta,
+#fp.canvas-mode .fpprog,
+#fp.canvas-mode .fpctrls,
+#fp.canvas-mode .fpex,
+#fp.canvas-mode .lyrics-container {
+  position: relative;
+  z-index: 10;
+  margin-top: 0;
+}
+
 #fp.canvas-mode .fphd ~ *:not(.fpcover) {
-  margin-top: auto !important; 
+  margin-top: auto;
 }
 
-/* Ajuste de los botones para que no se amontonen */
-#fp.canvas-mode .fpmeta, 
-#fp.canvas-mode .fpprog, 
-#fp.canvas-mode .fpctrls, 
-#fp.canvas-mode .fpex {
-  position: relative !important;
-  z-index: 10 !important;
-  width: 100% !important;
-}
-
-/* Espacio extra abajo para que no choque con la barra del iPhone */
-#fp.canvas-mode .fpex {
-  padding-bottom: calc(var(--sb, 0px) + 20px) !important;
-}
 
 
 
