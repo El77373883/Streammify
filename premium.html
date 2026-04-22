@@ -1759,6 +1759,11 @@ window.guardarParaOffline = guardarParaOffline;
 (function init() {
   console.log('🚀 Iniciando Streamify...');
   
+  // Renderizar con datos locales primero
+  renderHome();
+  renderLib();
+  renderGenres();
+  
   function waitForFirebase() {
     if (window.firebaseReady && window.FB && window.db) {
       console.log('🎵 Firebase listo, cargando canciones y artistas...');
