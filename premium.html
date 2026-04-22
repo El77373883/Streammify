@@ -1059,8 +1059,15 @@ async function guardarParaOffline(track) {
       return;
     }
 
+    // Solo canciones de Firebase
+    if (!track.src.includes('firebasestorage')) {
+      toast('❌ Solo canciones subidas al sistema');
+      return;
+    }
+
     // Descargar el audio como blob
-    const response = await fetch(track.src);
+    toast('⏳ Descargando... puede tardar');
+    const response = await fetch(track.src, { mode: 'cors' });
     if (!response.ok) throw new Error('No se pudo descargar');
     const blob = await response.blob();
 
