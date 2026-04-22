@@ -847,7 +847,9 @@ max-width: 75%;
   
   
 <div class="fpex">
-    <button class="fpexbt" id="fpDownloadBtn"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 21h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Descargar</button>
+<a id="fpDownloadBtn" class="fpexbt" download>
+  <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 3v12m0 0l-4-4m4 4l4-4M3 21h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Descargar
+</a>
     <button class="fpexbt" onclick="toast('Conectar dispositivo')"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 21h8M12 17v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Dispositivos</button>
     <button class="fpexbt" onclick="toggleQueueView()"><svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg> Cola</button>
   </div>
@@ -1640,14 +1642,12 @@ if (!t.canvasUrl) {
 } else {
   document.getElementById('fp').style.background = 'transparent';
 }
-
 document.getElementById('player').classList.add('show');
 // Botón descarga en el reproductor fullscreen
 const dlBtn = document.getElementById('fpDownloadBtn');
-dlBtn.onclick = async () => {
-  console.log('🔽 Descargando:', T[curIdx]);
-  await guardarParaOffline(T[curIdx]);
-};
+dlBtn.href = t.src;
+dlBtn.setAttribute('download', t.title + '.mp3');
+
 
 
 document.querySelectorAll('.titem').forEach(el => el.classList.remove('now'));
