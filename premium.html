@@ -1109,7 +1109,8 @@ async function loadFirestoreSongs() {
         lyrics: data.lyrics || '',
         duration: data.duration || 180,
         featured: data.featured || false,
-        canvasUrl: data.canvasUrl || null
+        canvasUrl: data.canvasUrl || null,
+        collaborators: data.collaborators || []
       };
     });
     
