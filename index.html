@@ -1012,6 +1012,7 @@ const q = query(collection(window.db, 'songs'), orderBy('order', 'asc'));
 return {
         id: doc.id,
         title: data.title || 'Sin título',
+        artistId: data.artistId || null,
         artist: data.artist || data.artistName || 'Desconocido',
         album: data.albumName || data.album || '',
         genre: data.genre || 'Pop',
@@ -1080,9 +1081,20 @@ async function loadFirestoreArtists() {
 
     firestoreArtists.forEach(artist => {
       T.forEach((track, i) => {
-        if (track.artist?.toLowerCase() === artist.name?.toLowerCase() || track.artistId === artist.id) {
-          artist.tids.push(i);
-        }
+const mainArtist = track.artist?.toLowerCase() || '';
+const artistName = artist.name?.toLowerCase() || '';
+let isCollab = false;
+if (Array.isArray(track.collaborators)) {
+  isCollab = track.collaborators.some(c =>
+    typeof c === 'string'
+      ? c.toLowerCase().trim() === artistName
+      : c.name?.toLowerCase().trim() === artistName || c.id === artist.id
+  );
+}
+if ((mainArtist === artistName || mainArtist.includes(artistName) || track.artistId === artist.id || isCollab) && !artist.tids.includes(i)) {
+  artist.tids.push(i);
+}
+
       });
     });
 
