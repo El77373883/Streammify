@@ -34,10 +34,20 @@ self.addEventListener('fetch', event => {
   // Ignorar todo lo externo
   if (url.origin !== location.origin) return;
 
-  // Solo cachear páginas propias
+  // Ignorar métodos que no sean GET
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).catch(() => cached);
-    })
+    fetch(event.request)
+      .then(res => {
+        const copia = res.clone();
+        caches.open(CACHE_NAME).then(c => c.put(event.request, copia));
+        return res;
+      })
+      .catch(() =>
+        caches.match(event.request).then(cached =>
+          cached || caches.match('/premium.html')
+        )
+      )
   );
 });
