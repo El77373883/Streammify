@@ -1045,33 +1045,47 @@ async function guardarParaOffline(track) {
     toast('❌ No hay canción para guardar');
     return;
   }
-  
-  toast('💾 Guardando para offline...');
-  
+
+  toast('⏳ Descargando audio...');
+
   try {
-    // Guardar metadata de la canción
+    // Verificar si ya existe
     const offlineSongs = (await offlineCache.getItem('songs')) || [];
-    const exists = offlineSongs.find(s => s.id === track.id || s.src === track.src);
-    if (!exists) {
-      offlineSongs.push({
-        id: track.id || track.src,
-        title: track.title,
-        artist: track.artist,
-        album: track.album,
-        src: track.src,
-        coverUrl: track.coverUrl,
-        pal: track.pal,
-        duration: track.duration
-      });
-      await offlineCache.setItem('songs', offlineSongs);
+    const exists = offlineSongs.find(s => s.src === track.src);
+    if (exists) {
+      toast('✅ Ya está descargada');
+      return;
     }
-    
-    toast('✅ ¡Canción guardada offline!');
+
+    // Descargar el audio como blob
+    const response = await fetch(track.src);
+    if (!response.ok) throw new Error('No se pudo descargar');
+    const blob = await response.blob();
+
+    // Guardar el blob en localforage
+    await offlineCache.setItem('audio_' + (track.id || track.title), blob);
+
+    // Guardar metadata
+    offlineSongs.push({
+      id: track.id || track.src,
+      title: track.title,
+      artist: track.artist,
+      album: track.album,
+      src: track.src,
+      blobKey: 'audio_' + (track.id || track.title),
+      coverUrl: track.coverUrl,
+      pal: track.pal,
+      duration: track.duration
+    });
+    await offlineCache.setItem('songs', offlineSongs);
+
+    toast('✅ ¡Descargada para offline!');
   } catch (e) {
-    console.error('Error guardando offline:', e);
-    toast('❌ Error al guardar');
+    console.error('Error:', e);
+    toast('❌ Error al descargar. Verifica conexión');
   }
 }
+
 
 // ===== CARGAR CANCIONES OFFLINE =====
 async function loadOfflineSongs() {
@@ -1561,10 +1575,24 @@ function openPL(id){
 function closePL(){document.getElementById('pp').classList.remove('open');}
 function playPLAll(){if(curPL&&curPL.tids.length)playTrack(curPL.tids[0]);}
 
-function playTrack(idx){
+async function playTrack(idx){
   if (!T[idx]) return;
   curIdx=idx;const t=T[idx];
-  aud.src=t.src;aud.load();
+// Intentar usar audio descargado offline
+const offlineSongs = await offlineCache.getItem('songs') || [];
+const offlineTrack = offlineSongs.find(s => s.src === t.src);
+if (offlineTrack && offlineTrack.blobKey) {
+  const blob = await offlineCache.getItem(offlineTrack.blobKey);
+  if (blob) {
+    aud.src = URL.createObjectURL(blob);
+  } else {
+    aud.src = t.src;
+  }
+} else {
+  aud.src = t.src;
+}
+aud.load();
+
 aud.play().catch(()=>{});
   playing=true;
   
