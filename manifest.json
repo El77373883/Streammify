@@ -1,0 +1,8 @@
+{
+  "name": "Streamify Premium",
+  "short_name": "Streamify",
+  "start_url": "/premium.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#1DB954"
+}
