@@ -1,4 +1,4 @@
-const CACHE_NAME = 'streamify-v3';
+const CACHE_NAME = 'streamify-v4';
 
 const urlsToCache = [
   '/index.html',
@@ -7,6 +7,9 @@ const urlsToCache = [
   '/intro.html',
   '/login.html',
   '/precios.html',
+  '/premium.html',
+  '/planes.html',
+  '/manifest.json',
 ];
 
 self.addEventListener('install', event => {
