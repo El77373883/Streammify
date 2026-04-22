@@ -1471,8 +1471,20 @@ const row=document.createElement('div');row.className='titem';row.id='titem_'+ti
     const num=document.createElement('div');num.className='tnum';num.textContent=i+1;
     const thumb=document.createElement('div');thumb.className='tthumb';
     thumb.appendChild(getImageOrCover(t, 88, false));
-    const inf=document.createElement('div');inf.style='flex:1;min-width:0';
-    inf.innerHTML=`<div class="tname">${t.title}</div><div class="tplays">${(Math.random()*800+100|0)}M</div>`;
+    const inf = document.createElement('div');inf.style = 'flex:1;min-width:0';
+
+// Detectar si es colaboración
+const isCollab = t.collaborators?.some(c => 
+  c.name?.toLowerCase() === curArtist.name.toLowerCase() || c.id === curArtist.id
+);
+
+inf.innerHTML = `
+  <div class="tname">
+    ${t.title} 
+    ${isCollab ? '<span style="background:rgba(255,255,255,0.15);padding:2px 6px;border-radius:10px;font-size:10px;margin-left:6px;">COLAB</span>' : ''}
+  </div>
+  <div class="tplays">${(Math.random()*800+100|0)}M</div>
+`;
     const dur=document.createElement('div');dur.className='tdur';dur.textContent=fmt(t.duration || 150+Math.random()*90);
 const bars=document.createElement('div');bars.className='playing-bars';bars.id='bars_'+ti;bars.innerHTML='<span></span><span></span><span></span>';bars.style.display=(curIdx===ti&&playing)?'flex':'none';
 row.append(num,thumb,inf,dur,bars);at.appendChild(row);
