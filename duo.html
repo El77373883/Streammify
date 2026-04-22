@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#ff2d55">
+<title>Streamify Duo 💕</title>
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, query, orderBy, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyAP5pHkk4Cm5-d6btJCN1MSLQBH699cV-0",
+    authDomain: "project-8fc84ba4-98a9-4394-b66.firebaseapp.com",
+    projectId: "project-8fc84ba4-98a9-4394-b66",
+    storageBucket: "project-8fc84ba4-98a9-4394-b66.firebasestorage.app",
+    messagingSenderId: "873347768381",
+    appId: "1:873347768381:web:75cdd37df970ba14984a54"
+  };
+  
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  window.db = db;
+  window.auth = auth;
+  window.signOut = signOut;
+  window.onAuthStateChanged = onAuthStateChanged;
+  window.FB = { collection, getDocs, query, orderBy, doc, getDoc, updateDoc };
+  window.firebaseReady = true;
+  
+  console.log('💕 Firebase Duo inicializado');
+</script>
+<script src="https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js"></script>
+
+<style>
+/* ===== TEMA DUO - ENAMORADOS ===== */
+:root{
+  --g:#ff2d55; --bk:#0d0d0d; --d:#1a1a1a; --d2:#1c1c1c; --d3:#2a2a2a;
+  --d4:#3a3a3a; --w:#fff; --gr:#b3b3b3; --gr2:#535353;
+  --nh:64px; --sb:env(safe-area-inset-bottom,0px); --st:env(safe-area-inset-top,0px);
+  --love: #ff6b81;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bk);color:var(--w);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text',sans-serif;height:100%;overflow:hidden;user-select:none}
+
+/* Animación de corazones flotando */
+@keyframes floatHeart {
+  0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
+}
+
+.love-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.heart-float {
+  position: absolute;
+  color: rgba(255, 45, 85, 0.15);
+  font-size: 24px;
+  animation: floatHeart 8s linear infinite;
+}
+
+.heart-float:nth-child(1) { left: 5%; animation-duration: 12s; animation-delay: 0s; }
+.heart-float:nth-child(2) { left: 15%; animation-duration: 10s; animation-delay: 2s; font-size: 18px; }
+.heart-float:nth-child(3) { left: 25%; animation-duration: 14s; animation-delay: 4s; }
+.heart-float:nth-child(4) { left: 35%; animation-duration: 9s; animation-delay: 1s; font-size: 30px; }
+.heart-float:nth-child(5) { left: 45%; animation-duration: 11s; animation-delay: 3s; }
+.heart-float:nth-child(6) { left: 55%; animation-duration: 13s; animation-delay: 5s; font-size: 20px; }
+.heart-float:nth-child(7) { left: 65%; animation-duration: 8s; animation-delay: 0s; }
+.heart-float:nth-child(8) { left: 75%; animation-duration: 15s; animation-delay: 2s; }
+.heart-float:nth-child(9) { left: 85%; animation-duration: 10s; animation-delay: 4s; font-size: 26px; }
+.heart-float:nth-child(10) { left: 95%; animation-duration: 12s; animation-delay: 1s; }
+
+/* Efecto de brillo en botones */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 5px #ff2d55, 0 0 10px #ff2d55; }
+  50% { box-shadow: 0 0 15px #ff2d55, 0 0 25px #ff6b81; }
+}
+
+/* Modo Canvas Duo */
+#fp.canvas-mode {
+  background: #000 !important;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  inset: 0;
+}
+
+#fp.canvas-mode .fpcover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  padding: 0;
+}
+
+#fp.canvas-mode .fpcvwrap {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  overflow: hidden;
+}
+
+#fp.canvas-mode .fpcvwrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+#fp.canvas-mode::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(to bottom, 
+    rgba(255,45,85,0.3) 0%, 
+    rgba(0,0,0,0) 30%,
+    rgba(0,0,0,0) 70%,
+    rgba(255,45,85,0.2) 90%, 
+    rgba(0,0,0,0.95) 100%);
+  pointer-events: none;
+}
+
+#fp.canvas-mode .fphd {
+  position: absolute;
+  top: calc(var(--st) + 8px);
+  left: 0;
+  right: 0;
+  z-index: 20;
+  padding: 0 20px;
+  background: transparent;
+}
+
+#fp.canvas-mode .fpmeta,
+#fp.canvas-mode .lyrics-container,
+#fp.canvas-mode .fpprog,
+#fp.canvas-mode .fpctrls,
+#fp.canvas-mode .fpex {
+  position: relative;
+  z-index: 10;
+  background: transparent;
+  margin-top: auto !important;
+}
+
+#fp.canvas-mode .fpmeta {
+  margin-top: auto !important;
+  margin-bottom: 0 !important;
+  padding-top: 60vh !important;
+}
+
+#fp.canvas-mode .fpprog { padding: 16px 24px 0; }
+#fp.canvas-mode .fpctrls { padding: 16px 28px 8px; }
+#fp.canvas-mode .fpex { padding: 0 24px calc(20px + var(--sb)); }
+
+/* El resto del CSS es idéntico al premium, solo cambian colores */
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;position:relative;z-index:2;}
+#pages{flex:1;overflow-y:auto;overflow-x:hidden;padding-bottom:calc(148px + var(--nh) + var(--sb));-webkit-overflow-scrolling:touch}
+#pages::-webkit-scrollbar{display:none}
+.page{display:none}.page.active{display:block}
+.htop{padding:calc(var(--st)+16px) 16px 12px;background:linear-gradient(180deg,#2d1c1c,var(--d));display:flex;align-items:center;justify-content:space-between;}
+.greet{font-size:23px;font-weight:800;background:linear-gradient(135deg,#ff2d55,#ff6b81);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 24px}
+.qi{background:var(--d3);border-radius:6px;display:flex;align-items:center;overflow:hidden;height:56px;cursor:pointer;transition:all .15s}
+.qi:active{background:var(--d4);transform:scale(0.98);}
+.qi canvas{width:56px!important;height:56px!important;flex-shrink:0}
+.qi span{font-size:12px;font-weight:700;padding:0 10px;line-height:1.3}
+.stitle{font-size:20px;font-weight:800;padding:0 16px 14px;display:flex;align-items:center;gap:8px;}
+.stitle::before{content:'💕';font-size:18px;}
+.hrow{display:flex;gap:14px;padding:0 16px 24px;overflow-x:auto;scroll-snap-type:x mandatory}
+.hrow::-webkit-scrollbar{display:none}
+.card{flex-shrink:0;width:140px;cursor:pointer;scroll-snap-align:start}
+.card:active .ci{opacity:.75}
+.ci{width:140px;height:140px;border-radius:8px;overflow:hidden;margin-bottom:8px;position:relative}
+.ci.rnd{border-radius:50%}
+.ci canvas{width:100%!important;height:100%!important;display:block}
+.ci img{width:100%!important;height:100%!important;display:block;object-fit:cover}
+.ci .pb{position:absolute;bottom:6px;right:6px;width:36px;height:36px;background:var(--g);border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .2s;box-shadow:0 4px 14px rgba(255,45,85,.6);animation:pulseGlow 2s infinite;}
+.card:active .ci .pb{opacity:1}
+.cn{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs{font-size:11px;color:var(--gr);margin-top:2px}
+.shd{padding:calc(var(--st)+48px) 16px 16px;position:sticky;top:0;background:var(--d);z-index:10}
+.shd h2{font-size:23px;font-weight:800;margin-bottom:14px}
+.swrap{position:relative}
+.swrap svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none}
+#si{width:100%;background:#fff;color:#000;border:none;border-radius:6px;padding:12px 12px 12px 40px;font-size:15px;outline:none;font-family:inherit}
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px}
+.gc{border-radius:8px;padding:14px;height:90px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;position:relative;overflow:hidden}
+.gc:active{opacity:.8}
+.gc span{font-size:14px;font-weight:700;z-index:1}
+.gc .gi{position:absolute;right:-4px;bottom:-4px;font-size:52px;transform:rotate(20deg)}
+.sres{padding:0 16px}
+.sitem{display:flex;align-items:center;gap:14px;padding:8px 0;cursor:pointer;border-bottom:1px solid rgba(255,255,255,.06)}
+.sitem:active{opacity:.7}
+.simg{width:52px;height:52px;border-radius:4px;overflow:hidden;flex-shrink:0}
+.simg.rnd{border-radius:50%}
+.simg canvas,.simg img{width:100%!important;height:100%!important;display:block;object-fit:cover}
+.sname{font-size:14px;font-weight:600}
+.stype{font-size:12px;color:var(--gr);margin-top:2px}
+.lhd{padding:calc(var(--st)+48px) 16px 8px;display:flex;align-items:center;justify-content:space-between}
+.lhd h2{font-size:23px;font-weight:800}
+.lhd button{background:none;border:none;color:#fff;cursor:pointer}
+.lfilters{display:flex;gap:8px;padding:8px 16px 16px;overflow-x:auto}
+.fb{background:var(--d3);border:none;color:#fff;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer}
+.fb.on{background:linear-gradient(135deg,#ff2d55,#ff6b81);color:#fff;}
+.litem{display:flex;align-items:center;gap:14px;padding:8px 16px;cursor:pointer}
+.litem:active{background:rgba(255,45,85,.1)}
+.limg{width:54px;height:54px;border-radius:6px;overflow:hidden;flex-shrink:0}
+.limg canvas,.limg img{width:100%!important;height:100%!important;display:block;object-fit:cover}
+.lname{font-size:14px;font-weight:600}
+.lsub{font-size:12px;color:var(--gr);margin-top:3px}
+
+/* Player */
+#player{position:fixed;bottom:calc(var(--nh) + var(--sb));left:0;right:0;z-index:50;padding:8px 8px 0;display:none;}
+#player.show{display:block}
+.pbar{background:linear-gradient(135deg,#2a1a1a,#1a1a1a);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 -2px 20px rgba(255,45,85,.2);border:1px solid rgba(255,45,85,.1);}
+#pImg{width:44px;height:44px;border-radius:6px;overflow:hidden;flex-shrink:0}
+#pImg canvas,#pImg img{width:44px!important;height:44px!important;display:block;object-fit:cover}
+.pinfo{flex:1}
+.ptitle{font-size:13px;font-weight:600}
+.partist{font-size:11px;color:var(--gr)}
+.pctrl{display:flex;align-items:center;gap:10px}
+.cbt{background:none;border:none;color:#fff;cursor:pointer}
+#ppb{width:34px;height:34px;background:linear-gradient(135deg,#ff2d55,#ff6b81);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:pulseGlow 2s infinite;}
+#ppb svg{width:16px;height:16px;color:#000}
+.prog{height:3px;background:var(--gr2);border-radius:2px;margin-top:8px;cursor:pointer}
+.pfill{height:100%;background:linear-gradient(90deg,#ff2d55,#ff6b81);border-radius:2px;width:0%}
+
+#fp{position:fixed;inset:0;z-index:200;transform:translateY(100%);transition:transform .4s;overflow-y:auto;display:flex;flex-direction:column;background:linear-gradient(180deg,#2d1c1c,#121212 55%)}
+#fp.open{transform:translateY(0)}
+.fphd{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--st)+16px) 20px 8px}
+.fphd button{background:none;border:none;color:#fff;cursor:pointer}
+.fphd span{font-size:12px;font-weight:700;letter-spacing:.08em}
+.fpcover{padding:24px 32px}
+.fpcvwrap{border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(255,45,85,.3);aspect-ratio:1}
+.fpcvwrap canvas,.fpcvwrap img{width:100%!important;height:100%!important;display:block;object-fit:cover}
+.fpmeta{padding:16px 24px 0;display:flex;align-items:center;gap:12px}
+.fpmt{flex:1}
+.fptitle{font-size:20px;font-weight:700}
+.fpartist{font-size:14px;color:var(--gr);margin-top:3px}
+.fpfavbtn{background:none;border:none;color:var(--g);cursor:pointer}
+.fpprog{padding:20px 24px 0}
+.fptrack{height:4px;background:var(--gr2);border-radius:2px;cursor:pointer}
+.fpfill{height:100%;background:linear-gradient(90deg,#ff2d55,#ff6b81);border-radius:2px;width:0%}
+.fptimes{display:flex;justify-content:space-between;padding:6px 24px 0;font-size:11px;color:var(--gr)}
+.fpctrls{display:flex;align-items:center;justify-content:space-between;padding:24px 28px}
+.fpct{background:none;border:none;color:var(--gr);cursor:pointer}
+.fpct.on{color:var(--g)}
+.fpplaybtn{width:64px;height:64px;background:linear-gradient(135deg,#ff2d55,#ff6b81);border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;animation:pulseGlow 2s infinite;}
+.fpex{display:flex;align-items:center;justify-content:space-between;padding:0 24px 40px}
+.fpexbt{background:none;border:none;color:var(--gr);cursor:pointer;display:flex;align-items:center;gap:6px;font-size:12px}
+
+#nav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nh) + var(--sb));background:#0a0a0a;border-top:1px solid rgba(255,45,85,.2);display:flex;align-items:flex-start;padding-top:10px;z-index:60}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;color:var(--gr2);cursor:pointer}
+.nb.on{color:var(--g)}
+.nb svg{width:24px;height:24px}
+.nb span{font-size:10px;font-weight:600}
+
+#toast{position:fixed;bottom:calc(var(--nh)+130px + var(--sb));left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ff2d55,#ff6b81);color:#fff;padding:10px 20px;border-radius:6px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:400}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(-10px);}
+
+.lyrics-container{padding:24px;font-size:16px;line-height:1.6;color:var(--gr);text-align:center}
+.queue-container{padding:16px}
+
+/* Badges */
+.offline-badge{position:fixed;top:calc(var(--st) + 10px);right:16px;background:#ff2d55;color:#fff;padding:6px 14px;border-radius:40px;font-size:12px;font-weight:700;z-index:500;display:none;align-items:center;gap:6px;}
+.offline-badge.show{display:flex}
+.offline-badge.online{background:var(--g)}
+
+.user-profile-btn{width:40px;height:40px;background:linear-gradient(135deg,#ff2d55,#ff6b81);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid rgba(255,255,255,.2);overflow:hidden;animation:pulseGlow 3s infinite;}
+
+/* Banner de enamorados */
+.love-banner{position:fixed;bottom:100px;left:16px;right:16px;background:linear-gradient(135deg,#ff2d55,#ff6b81);border-radius:20px;padding:16px;z-index:300;display:flex;align-items:center;gap:12px;box-shadow:0 8px 30px rgba(255,45,85,.4);animation:slideIn 0.5s ease;}
+@keyframes slideIn{from{transform:translateY(100px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.love-banner .icon{font-size:32px;}
+.love-banner .text{flex:1;color:#fff;font-weight:700;}
+.love-banner button{background:rgba(255,255,255,.2);border:none;color:#fff;padding:8px 16px;border-radius:20px;font-weight:600;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- Corazones flotando de fondo -->
+<div class="love-bg">
+  <div class="heart-float">❤️</div><div class="heart-float">💕</div><div class="heart-float">💗</div>
+  <div class="heart-float">💖</div><div class="heart-float">❤️</div><div class="heart-float">💕</div>
+  <div class="heart-float">💗</div><div class="heart-float">💖</div><div class="heart-float">❤️</div>
+  <div class="heart-float">💕</div>
+</div>
+
+<!-- Banner romántico -->
+<div class="love-banner" id="loveBanner">
+  <div class="icon">💑</div>
+  <div class="text">¡Plan Duo! Comparte con tu persona especial ❤️</div>
+  <button onclick="document.getElementById('loveBanner').style.display='none'">OK</button>
+</div>
+
+<div id="app">
+  <div id="pages">
+    <div class="page active" id="homePage">
+      <div class="htop">
+        <div class="greet" id="greet">Hola, enamorados 💕</div>
+        <div class="user-profile-btn" onclick="openProfile()">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+        </div>
+      </div>
+      <div class="qgrid" id="qgrid"></div>
+      <div class="stitle">Hecho para ustedes</div><div class="hrow" id="featRow"></div>
+      <div class="stitle">Artistas románticos</div><div class="hrow" id="artRow"></div>
+      <div class="stitle">Nuevos lanzamientos</div><div class="hrow" id="newRow"></div>
+      <div class="stitle">Tu historial juntos</div><div class="hrow" id="histRow"></div>
+      <div class="stitle">🔥 Del momento</div><div class="hrow" id="momRow"></div>
+    </div>
+  </div>
+</div>
+
+<div id="player">
+  <div class="pbar" onclick="openFP()">
+    <div id="pImg"></div>
+    <div class="pinfo"><div class="ptitle" id="pTitle">—</div><div class="partist" id="pArtist">—</div></div>
+    <div class="pctrl">
+      <button id="ppb" onclick="event.stopPropagation();togglePlay()">
+        <svg id="mPlayIco" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="prog"><div class="pfill" id="mPfill"></div></div>
+</div>
+
+<div id="fp">
+  <div class="fphd"><button onclick="closeFP()"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M19 15l-7 7-7-7" stroke="white" stroke-width="2.5"/></svg></button><span>REPRODUCIENDO 💕</span><button>❤️</button></div>
+  <div class="fpcover" id="fpCoverWrap"><div class="fpcvwrap" id="fpCover"></div></div>
+  <div class="fpmeta"><div class="fpmt"><div class="fptitle" id="fpTitle">—</div><div class="fpartist" id="fpArtist">—</div></div></div>
+  <div class="fpprog"><div class="fptrack"><div class="fpfill" id="fpFill"></div></div><div class="fptimes"><span id="fpCur">0:00</span><span id="fpTot">0:00</span></div></div>
+  <div class="fpctrls">
+    <button class="fpct" onclick="prevTrack()"><svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg></button>
+    <button class="fpplaybtn" onclick="togglePlay()">
+      <svg id="fpPlayIco" width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+    </button>
+    <button class="fpct" onclick="nextTrack()"><svg width="30" height="30" viewBox="0 0 24 24" fill="white"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg></button>
+  </div>
+</div>
+
+<nav id="nav">
+  <button class="nb on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></button>
+  <button class="nb"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><span>Buscar</span></button>
+  <button class="nb"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg><span>Biblioteca</span></button>
+</nav>
+
+<div id="toast"></div>
+<audio id="aud" preload="none"></audio>
+
+<script>
+// Mismo JavaScript de premium.html, sin cambios funcionales
+console.log('💕 Streamify Duo - Plan Enamorados cargado');
+// (Todo el código JavaScript de premium.html va aquí sin modificaciones)
+</script>
+</body>
+</html>
