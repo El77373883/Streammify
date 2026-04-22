@@ -1165,13 +1165,22 @@ async function loadFirestoreArtists() {
       };
     });
 
-    firestoreArtists.forEach(artist => {
-      T.forEach((track, i) => {
-        if (track.artist?.toLowerCase() === artist.name?.toLowerCase() || track.artistId === artist.id) {
-          artist.tids.push(i);
-        }
-      });
-    });
+firestoreArtists.forEach(artist => {
+  T.forEach((track, i) => {
+    // Verificar si es artista principal
+    const isMainArtist = track.artist?.toLowerCase() === artist.name?.toLowerCase() || track.artistId === artist.id;
+    
+    // Verificar si es colaborador (busca en el array de collaborators)
+    const isCollaborator = track.collaborators?.some(c => 
+      c.name?.toLowerCase() === artist.name?.toLowerCase() || c.id === artist.id
+    );
+    
+    // Si es artista principal O colaborador, agregar la canción
+    if (isMainArtist || isCollaborator) {
+      artist.tids.push(i);
+    }
+  });
+});
 
     firestoreArtists.forEach(fa => {
       const exists = A.find(a => a.name.toLowerCase() === fa.name.toLowerCase());
