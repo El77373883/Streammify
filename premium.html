@@ -1129,6 +1129,7 @@ async function loadFirestoreSongs() {
     renderHome();
     renderLib();
     renderGenres();
+    rebuildArtistTids();
   } catch (e) {
     console.error('❌ Error cargando Firestore:', e);
     T = [...T_ORIGINAL];
@@ -1140,60 +1141,63 @@ async function loadFirestoreSongs() {
 }
 
 // ===== CARGAR ARTISTAS DE FIRESTORE =====
+function rebuildArtistTids() {
+  A.forEach(artist => {
+    artist.tids = [];
+    const artistName = artist.name?.toLowerCase().trim();
+    T.forEach((track, i) => {
+      const mainArtist = track.artist?.toLowerCase() || '';
+      const isMain = mainArtist === artistName || track.artistId === artist.id;
+      let isCollab = false;
+      if (Array.isArray(track.collaborators)) {
+        isCollab = track.collaborators.some(c => {
+          if (typeof c === 'string') return c.toLowerCase().trim() === artistName;
+          return c.id === artist.id || c.name?.toLowerCase().trim() === artistName;
+        });
+      }
+      if ((isMain || isCollab) && !artist.tids.includes(i)) {
+        artist.tids.push(i);
+      }
+    });
+  });
+  renderHome();
+  renderLib();
+}
+
 async function loadFirestoreArtists() {
   if (!window.firebaseReady || !window.FB) {
     setTimeout(() => loadFirestoreArtists(), 300);
     return;
   }
-  
   try {
     const { collection, getDocs } = window.FB;
-    
     const snapshot = await getDocs(collection(window.db, 'artists'));
-    const firestoreArtists = snapshot.docs.map(doc => {
+    snapshot.docs.forEach(doc => {
       const d = doc.data();
-      return {
-        id: doc.id,
-        name: d.name,
-        pal: Math.floor(Math.random() * PAL.length),
-        monthly: d.monthlyListeners || '0',
-        avatarUrl: d.avatarUrl || null,
-        bannerUrl: d.bannerUrl || null,
-        verified: d.verified || false,
-        bio: d.bio || '',
-        tids: []
-      };
+      const exists = A.find(a => a.name.toLowerCase() === d.name?.toLowerCase());
+      if (!exists) {
+        A.push({
+          id: doc.id,
+          name: d.name,
+          pal: Math.floor(Math.random() * PAL.length),
+          monthly: d.monthlyListeners || '0',
+          avatarUrl: d.avatarUrl || null,
+          bannerUrl: d.bannerUrl || null,
+          verified: d.verified || false,
+          bio: d.bio || '',
+          tids: []
+        });
+      }
     });
-
-firestoreArtists.forEach(artist => {
-  T.forEach((track, i) => {
-    // Verificar si es artista principal
-    const isMainArtist = track.artist?.toLowerCase() === artist.name?.toLowerCase() || track.artistId === artist.id;
-    
-    // Verificar si es colaborador (busca en el array de collaborators)
-    const isCollaborator = track.collaborators?.some(c => 
-      c.name?.toLowerCase() === artist.name?.toLowerCase() || c.id === artist.id
-    );
-    
-    // Si es artista principal O colaborador, agregar la canción
-    if (isMainArtist || isCollaborator) {
-      artist.tids.push(i);
-    }
-  });
-});
-
-    firestoreArtists.forEach(fa => {
-      const exists = A.find(a => a.name.toLowerCase() === fa.name.toLowerCase());
-      if (!exists) A.push(fa);
-    });
-
     console.log('✅ Artistas cargados:', A.length);
-    renderHome();
-    renderLib();
+    rebuildArtistTids();
   } catch (e) {
     console.error('❌ Error cargando artistas:', e);
+    rebuildArtistTids();
   }
 }
+
+
 
 // ===== FUNCIONES AUXILIARES =====
 function fmt(s){s=Math.floor(s||0);return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;}
