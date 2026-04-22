@@ -1041,12 +1041,14 @@ document.addEventListener('DOMContentLoaded', updateOnlineStatus);
 
 // ===== GUARDAR CANCIÓN OFFLINE =====
 async function guardarParaOffline(track) {
+  console.log('📥 guardarParaOffline llamado con:', track);
   if (!track || !track.src) {
     toast('❌ No hay canción para guardar');
     return;
   }
 
   toast('⏳ Descargando audio...');
+
 
   try {
     // Verificar si ya existe
@@ -1634,7 +1636,12 @@ if (!t.canvasUrl) {
 
 document.getElementById('player').classList.add('show');
 // Botón descarga en el reproductor fullscreen
-document.getElementById('fpDownloadBtn').onclick = () => guardarParaOffline(T[curIdx]);
+const dlBtn = document.getElementById('fpDownloadBtn');
+dlBtn.onclick = async () => {
+  console.log('🔽 Descargando:', T[curIdx]);
+  await guardarParaOffline(T[curIdx]);
+};
+
 
 document.querySelectorAll('.titem').forEach(el => el.classList.remove('now'));
 const cur = document.getElementById('titem_' + idx);
