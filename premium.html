@@ -1101,6 +1101,7 @@ async function loadFirestoreSongs() {
       return {
         id: doc.id,
         title: data.title || 'Sin título',
+        artistId: data.artistId || null,
         artist: data.artist || data.artistName || 'Desconocido',
         album: data.albumName || data.album || '',
         pal: data.pal || Math.floor(Math.random() * PAL.length),
@@ -1148,7 +1149,7 @@ function rebuildArtistTids() {
     const artistName = artist.name?.toLowerCase().trim();
     T.forEach((track, i) => {
       const mainArtist = track.artist?.toLowerCase() || '';
-      const isMain = mainArtist === artistName || track.artistId === artist.id;
+ const isMain = mainArtist === artistName || mainArtist.includes(artistName) || track.artistId === artist.id;
       let isCollab = false;
       if (Array.isArray(track.collaborators)) {
         isCollab = track.collaborators.some(c => {
