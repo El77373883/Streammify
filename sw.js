@@ -1,4 +1,5 @@
-const CACHE_NAME = 'streamify-v4';
+const CACHE_NAME = 'streamify-v5';
+
 
 const urlsToCache = [
   '/index.html',
